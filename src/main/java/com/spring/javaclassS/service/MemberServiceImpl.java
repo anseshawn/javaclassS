@@ -30,4 +30,9 @@ public class MemberServiceImpl implements MemberService {
 		
 		return memberDAO.setMemberJoinOk(vo);
 	}
+
+	@Override
+	public void setMemberPasswordUpdate(String mid, String pwd) {
+		memberDAO.setMemberPasswordUpdate(mid,pwd);
+	}
 }

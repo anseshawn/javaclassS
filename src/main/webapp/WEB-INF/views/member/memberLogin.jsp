@@ -22,6 +22,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>memberLogin.jsp</title>
   <%@ include file = "/WEB-INF/views/include/bs4.jsp" %>
+  <script>
+  	'use strict';
+  	
+  	$(function(){
+  		$("#searchPassword").hide();
+  	});
+  	
+  	// 비밀번호 찾기
+  	function pwdSearch() {
+  		$("#searchPassword").show();
+  	}
+  	
+  	// 임시 비밀번호 등록시켜주기
+  	function newPassword(){
+  		let mid = $("#midSearch").val().trim();
+  		let email = $("#emailSearch2").val().trim();
+  		if(mid=="" || email=="") {
+  			alert("가입시 등록한 아이디와 메일 주소를 입력하세요.");
+  			$("#midSearch").focus();
+  			return false;
+  		}
+  		
+  		$.ajax({
+  			url: "${ctp}/member/memberNewPassword",
+  			type: "post",
+  			data: {
+  				mid : mid,
+  				email : email
+  			},
+  			success: function(res){
+  				if(res != "0") alert("새로운 비밀번호가 메일로 발송 되었습니다.\n받은 메일함을 확인하세요.");
+  				else alert("등록하신 정보가 일치하지 않습니다.\n확인 후 다시 처리하세요.");
+  			},
+  			error: function(){
+  				alert("전송오류");
+  			}
+  		});
+  	}
+  </script>
 </head>
 <body>
 <jsp:include page="/WEB-INF/views/include/nav.jsp" />
@@ -59,6 +98,28 @@
     	</tr>
     </table>
   </form>
+  <div id="searchPassword">
+  	<hr/>
+  	<table class="table table-bordered p-0 text-center">
+  		<tr>
+  			<td colspan="2">
+  				<font size="4"><b>비밀번호 찾기</b></font>
+  				(가입시 입력한 아이디와 메일 주소를 입력하세요.)
+  			</td>
+  		</tr>
+  		<tr>
+  			<th>아이디</th>
+  			<td><input type="text" name="midSearch" id="midSearch" class="form-control" placeholder="아이디를 입력하세요" /></td>
+  		</tr>
+  		<tr>
+  			<th>이메일</th>
+  			<td><input type="text" name="emailSearch2" id="emailSearch2" class="form-control" placeholder="이메일을 입력하세요" /></td>
+  		</tr>
+  		<tr>
+  			<td colspan="2"><input type="button" value="새 비밀번호 발급" onclick="newPassword()" class="btn btn-primary form-control" /></td>
+  		</tr>
+  	</table>
+  </div>
 </div>
 <p><br/></p>
 <jsp:include page="/WEB-INF/views/include/footer.jsp" />
