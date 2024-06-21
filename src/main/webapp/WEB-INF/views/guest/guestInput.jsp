@@ -19,7 +19,7 @@
     <div class="form-group">
       <label for="name">성명</label>
       <input type="text" class="form-control" id="name" value="${sName}" placeholder="Enter username" name="name" required />
-      <div class="valid-feedback">Ok!!!</div>
+      <div class="valid-feedback">Ok!!</div>
       <div class="invalid-feedback">성명을 입력해 주세요.</div>
     </div>
     <div class="form-group">
