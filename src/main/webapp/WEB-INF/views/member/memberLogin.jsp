@@ -28,7 +28,7 @@
 <jsp:include page="/WEB-INF/views/include/slide2.jsp" />
 <p><br/></p>
 <div class="container">
-  <form name="myform" method="post" action="${ctp}/MemberLoginOk.mem">
+  <form name="myform" method="post">
     <table class="table table-bordered text-center">
       <tr>
         <td colspan="2"><font size="5">로 그 인</font></td>
@@ -45,10 +45,18 @@
         <td colspan="2">
           <input type="submit" value="로그인" class="btn btn-success mr-2"/>
           <input type="reset" value="다시입력" class="btn btn-warning mr-2"/>
-          <input type="button" value="회원가입" onclick="location.href='${ctp}/MemberJoin.mem';" class="btn btn-primary mr-4"/>
-	    		<input type="checkbox" name="idSave" checked /> 아이디 저장
+          <input type="button" value="회원가입" onclick="location.href='${ctp}/member/memberJoin';" class="btn btn-primary mr-4"/>
         </td>
       </tr>
+    </table>
+    <table class="table p-0">
+    	<tr>
+    		<td class="text-center">
+	    		<input type="checkbox" name="idSave" checked /> 아이디 저장 &nbsp; │ &nbsp;
+	    		[<a href="javascript:midSearch()">아이디 찾기</a>] /
+	    		[<a href="javascript:pwdSearch()">비밀번호 찾기</a>]
+    		</td>
+    	</tr>
     </table>
   </form>
 </div>
