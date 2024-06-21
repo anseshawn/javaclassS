@@ -29,7 +29,7 @@ create table member2 (
   primary key (idx),
   unique(mid)
 );
-
+drop table member2;
 desc member2;
 
 insert into member2 values (default,'admin','1234','관리맨','관리자','여자',default,'010-1234-5678','28800/서울시/그린아파트/100동/101호','abc@atom.com','http://www.atom.com','학생','등산',default,'관리자입니다.',default,default,default,default,default,default,default,default);
