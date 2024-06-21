@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="userNS">
+  <select id="getUserList" resultType="com.spring.javaclassS.vo.UserVO"> <!-- 자료를 여러개 가져온다면 vo에 담게 됨 - 패키지명과 함께 적기 -->
+  	select * from user order by idx desc;
+  </select>
+  <select id="getUserSearchList" resultType="com.spring.javaclassS.vo.UserVO">
+  	select * from user where mid like concat('%',#{midSearch},'%') order by idx desc;
+  </select>
+  
+  
+  <insert id="setUserInputOk" parameterType="com.spring.javaclassS.vo.UserVO">
+  	insert into user values (default, #{mid}, #{name}, #{age}, #{address});
+  </insert>
+  
+  
+  <update id="setUserUpdateOk" parameterType="com.spring.javaclassS.vo.UserVO">
+    update user set mid=#{mid}, name=#{name}, age=#{age}, address=#{address} where idx = #{idx};
+  </update>
+  
+  
+  <delete id="setUserDelete">
+  	delete from user where idx = #{idx}; <!-- mybatis에서는 #el 표기법 -->
+  </delete>
+</mapper>

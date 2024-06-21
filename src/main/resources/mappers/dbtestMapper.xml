@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.javaclassS.dao.DbtestDAO"> <!-- 구현객체 없이 바로 연결 -->
+	
+	<select id="getDbtestList" resultType="com.spring.javaclassS.vo.UserVO">
+		select * from user order by idx desc;
+	</select>
+	<select id="getDbtestSearch" resultType="com.spring.javaclassS.vo.UserVO">
+		select * from user where mid like concat('%',#{mid},'%') order by idx desc;
+	</select>
+	<select id="getDbtestWindow" resultType="int">
+		select count(*) from user where mid = #{mid};
+	</select>
+		
+	<select id="getUserIdCheck" resultType="com.spring.javaclassS.vo.UserVO">
+		select * from user where mid = #{mid};
+	</select>
+	
+	<select id="getDbtestMidList" resultType="String">
+		select mid from user order by mid;
+	</select>
+	
+	<select id="getDbtestAddressList" resultType="String">
+		select address from user group by address order by address;
+	</select>
+	
+	<select id="getUserAddressCheck" resultType="com.spring.javaclassS.vo.UserVO">
+		select * from user where address=#{address} order by address;
+	</select>
+	
+	
+	<insert id="setDbtestInputOk">
+		insert into user values(default,#{vo.mid},#{vo.name},#{vo.age},#{vo.address});
+	</insert>
+	
+	
+	<update id="setDbtestUpdateOk">
+		update user set mid=#{vo.mid}, name=#{vo.name}, age=#{vo.age}, address=#{vo.address} where idx=#{vo.idx};
+	</update>
+	
+	
+	<delete id="setDbtestDelete">
+		delete from user where idx = #{idx};
+	</delete>
+	
+</mapper>

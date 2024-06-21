@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+		
+	<!-- 데이터베이스연동을 위한 환경설정(JDBC설정) // 한번만 설정해 놓으면 됨(예전엔 getConn 사용) -->
+	<!-- url, user, password = dataSource // 변수명 정해져 있는 것 -->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/javaclass" />
+		<property name="username" value="root" />
+		<property name="password" value="1234" />
+	</bean>
+	
+	<!-- MyBatis SessionFactory 설정 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- xml setter 이용한 값 주입 -->
+		<!-- bean으로 되어있는 객체 // 예약어, 이 객체를 참조하겠다 -->
+		<property name="dataSource" ref="dataSource" />
+		<!-- mapperLocations 오타나면 무조건 404, 위치 적어줌 / 자바 sql문 주입 위치 => 자바 resources에 넣음 // Mapper.xml 고정 바뀌는 부분 *로 써줌  // 중간에 들어간 별은 경로에 대한 * // 앞에 별은 무조건 대문자Mapper 앞 => 틀리면 404 -->
+		<property name="mapperLocations" value="classpath:mappers/**/*Mapper.xml"></property>
+	</bean>
+	
+	<!-- SqlSessionTemplate 설정 -->
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<!-- xml 생성자 이용한 값 주입 // 인덱스 0번지에 들어오는 값을 넣어주세요 -->
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+	
+	<!-- 매퍼의 정보(SqlSessionFactory 객체의 실행된 결과)를 주입하기 위한 DAO객체의 위치를 설정 -->
+	<mybatis-spring:scan base-package="com.spring.javaclassS.dao" />
+	
+	<!-- 메일처리를 위한 Bean 등록하기 -->
+	<!-- 
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="smtp.gmail.com" />
+		<property name="port" value="587" />		
+		<property name="username" value="pr0911237@gmail.com" />		
+		<property name="password" value="oatdnlnavplshbig" />		
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.transport.protocol">smtp</prop>
+				<prop key="mail.smtp.starttls.enable">true</prop>
+				<prop key="mail.debug">true</prop>
+				<prop key="mail.smtp.ssl.trust">smtp.gmail.com</prop>
+				<prop key="mail.smtp.ssl.protocols">TLSv1.2</prop>
+			</props>
+		</property>
+	</bean>
+	 -->
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="smtp.gmail.com" />
+		<property name="port" value="587" />
+		<property name="username" value="pr0911237@gmail.com" />
+		<property name="password" value="oevsuhxrjrzjcoje" />
+		<property name="javaMailProperties">
+		  <props>
+		    <prop key="mail.transport.protocol">smtp</prop>
+		    <prop key="mail.smtp.starttls.enable">true</prop>
+		    <prop key="mail.debug">true</prop>
+		    <prop key="mail.smtp.ssl.trust">smtp.gmail.com</prop>
+		    <prop key="mail.smtp.ssl.protocols">TLSv1.2</prop>
+		  </props>
+		</property>
+	</bean>
+</beans>
+<!-- 프로젝트 단위의 작업들은 여기에 넣음(프로젝트마다 라이브러리 넣었던 것 기억) -->
