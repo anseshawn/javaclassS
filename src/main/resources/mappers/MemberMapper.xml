@@ -8,6 +8,9 @@
 	<select id="getMemberNickCheck" resultType="com.spring.javaclassS.vo.MemberVO">
 		select * from member2 where nickName = #{nickName};
 	</select>
+	<select id="getMemberNameCheck" resultType="com.spring.javaclassS.vo.MemberVO">
+		select * from member2 where name = #{name};
+	</select>
 	
 	
 	<insert id="setMemberJoinOk">

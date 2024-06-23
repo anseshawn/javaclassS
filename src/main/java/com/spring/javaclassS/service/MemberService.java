@@ -12,4 +12,6 @@ public interface MemberService {
 
 	public void setMemberPasswordUpdate(String mid, String pwd);
 
+	public MemberVO getMemberNameCheck(String name);
+
 }

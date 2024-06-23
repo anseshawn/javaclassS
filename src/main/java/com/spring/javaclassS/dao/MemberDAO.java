@@ -14,4 +14,6 @@ public interface MemberDAO {
 
 	void setMemberPasswordUpdate(@Param("mid") String mid,@Param("pwd")  String pwd);
 
+	MemberVO getMemberNameCheck(@Param("name") String name);
+
 }
