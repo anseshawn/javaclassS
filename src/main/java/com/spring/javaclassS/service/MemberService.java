@@ -14,4 +14,6 @@ public interface MemberService {
 
 	public MemberVO getMemberNameCheck(String name);
 
+	public void setMemberInforUpdate(String mid, int point);
+
 }

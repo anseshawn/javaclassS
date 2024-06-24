@@ -23,4 +23,10 @@
 	<update id="setMemberPasswordUpdate">
 		update member2 set pwd = #{pwd} where mid = #{mid};
 	</update>
+	
+	
+	<update id="setMemberInforUpdate">
+		update member2 set visitCnt=visitCnt+1, lastDate=now(), todayCnt=todayCnt+1, point=#{point} where mid = #{mid};
+	</update>
+	
 </mapper>

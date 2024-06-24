@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <c:set var="ctp" value="${pageContext.request.contextPath}"/>
 <%
+/*
 	// 로그인창에 아이디 체크 유무에 대한 처리
 	// 쿠키를 검색해서 cMid가 있을때 가져와서 아이디입력창에 뿌릴수 있게 한다.
 	Cookie[] cookies = request.getCookies();
@@ -14,6 +15,7 @@
 			}
 		}
 	}
+*/
 %>
 <!DOCTYPE html>
 <html>
@@ -101,6 +103,7 @@
   				document.getElementById("spinner").style.display='none';
   				if(res != "0") alert("회원님의 아이디가 메일로 발송 되었습니다.\n받은 메일함을 확인하세요.");
   				else alert("등록하신 정보가 일치하지 않습니다.\n확인 후 다시 처리하세요.");
+					location.reload();
   			},
   			error: function(){
   				alert("전송오류");
@@ -186,8 +189,11 @@
   			<td><input type="text" name="emailSearch2" id="emailSearch2" class="form-control" placeholder="이메일을 입력하세요" /></td>
   		</tr>
   		<tr>
-  			<td colspan="2"><input type="button" value="새 비밀번호 발급" onclick="newPassword()" class="btn btn-primary form-control" /></td>
+  			<td colspan="2"><input type="button" value="새 비밀번호 발급" onclick="newPassword()" class="btn btn-secondary form-control" /></td>
   		</tr>
+  		
+  		<!-- 2분안에 작성 안 하면 메일 초기화 기능(세션 혹은 메일 보낸 순간부터 타이머 설정해서) -->
+  		
   	</table>
   </div>
 </div>

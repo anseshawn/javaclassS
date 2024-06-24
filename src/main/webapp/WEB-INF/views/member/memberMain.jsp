@@ -46,8 +46,9 @@
 	<h2>회원 전용방</h2>
 	<hr/>
 	<!-- 실시간 채팅방(DB) -->
-  e<div class="row">
+  <div class="row">
     <div class="col" style="width:420px">
+    	<%-- 
 	    <form name="chatForm">
 	      <label for="chat"><b>실시간 대화방</b></label>
 	      <iframe src="${ctp}/include/memberMessage.jsp" width="100%" height="200px" class="border"></iframe>
@@ -58,6 +59,12 @@
 	        </div>
 	      </div>
 	    </form>
+	    --%>
+	    
+	    <c:if test="${!empty sLogin}">
+	    	<b>현재 임시 비밀번호를 발급하여 메일로 전송처리 되어 있습니다.<br/>
+	    	개인정보를 확인하여 비밀번호를 새로 변경해 주세요.</b><br/>
+	    </c:if>
 	  </div>
 	<!-- 실시간 채팅방 끝 -->
 		  <div class="col text-center">
@@ -98,7 +105,7 @@
   	</div>
   	
 		<div class="col">
-			<p><img src="${ctp}/images/member/${mVo.photo}" width="200px"/></p>
+			<p><img src="${ctp}/member/${mVo.photo}" width="200px"/></p>
 		</div>
 	</div>
 	<hr/>

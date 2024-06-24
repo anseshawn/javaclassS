@@ -40,4 +40,9 @@ public class MemberServiceImpl implements MemberService {
 	public MemberVO getMemberNameCheck(String name) {
 		return memberDAO.getMemberNameCheck(name);
 	}
+
+	@Override
+	public void setMemberInforUpdate(String mid, int point) {
+		memberDAO.setMemberInforUpdate(mid, point);
+	}
 }

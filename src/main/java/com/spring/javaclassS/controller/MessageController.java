@@ -92,6 +92,18 @@ public class MessageController {
 			model.addAttribute("msg", "회원 가입 실패");
 			model.addAttribute("url", "/member/memberJoin");
 		}
+		else if(msgFlag.equals("memberLoginOk")) {
+			model.addAttribute("msg", mid+"님 로그인 되었습니다.");
+			model.addAttribute("url", "/member/memberMain");
+		}
+		else if(msgFlag.equals("memberLoginNo")) {
+			model.addAttribute("msg", "회원 정보가 맞지 않습니다. 다시 로그인 해주세요.");
+			model.addAttribute("url", "/member/memberLogin");
+		}
+		else if(msgFlag.equals("memberLogout")) {
+			model.addAttribute("msg", mid+"님 로그아웃 되었습니다.");
+			model.addAttribute("url", "/member/memberLogin");
+		}
 		
 		return "include/message";
 	}

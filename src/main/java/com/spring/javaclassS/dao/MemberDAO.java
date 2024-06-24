@@ -16,4 +16,6 @@ public interface MemberDAO {
 
 	MemberVO getMemberNameCheck(@Param("name") String name);
 
+	void setMemberInforUpdate(@Param("mid") String mid, @Param("point") int point);
+
 }
