@@ -34,13 +34,15 @@
 <div class="container">
 <c:if test="${sLevel == 0}">
 	<input type="checkbox" name="userInfor" id="userInfor" onclick="userCheck()" /> 비공개회원 보기/가리기
-<!-- 		<div class="custom-control custom-checkbox">
+	<!--
+		<div class="custom-control custom-checkbox">
 	    <input type="checkbox" class="custom-control-input" id="userInfor" name="userInfor" onclick="userCheck()"/>
 	    <label class="custom-control-label" for="customCheck">비공개 회원 같이 보기</label>
- 	 	</div> -->
+ 	 	</div>
+ 	-->
 </c:if>
 <div id="tatalList">
-	<h3 class="text-center">전체 회원 리스트</h3>
+	<h3 class="text-center">전체 회원 리스트(총 ${fn:length(vos)} 건)</h3>
 	<table class="table table-hover text-center">
 		<tr class="table-dark text-dark">
 			<th>번호</th>
@@ -60,7 +62,7 @@
 				<c:if test="${vo.userDel == 'OK'}"><c:set var="active" value="탈퇴신청"></c:set> </c:if>
 				<c:if test="${vo.userDel != 'OK'}"><c:set var="active" value="활동중"></c:set> </c:if>
 				<tr>
-					<td>${vo.idx}</td>
+					<td>${st.count}</td>
 					<td><a href="MemberSearch.mem?mid=${vo.mid}">${vo.mid}</a></td>
 					<td>${vo.nickName}</td>
 					<td>${vo.name}</td>
@@ -101,7 +103,7 @@
 			<c:forEach var="vo" items="${vos}" varStatus="st">
 				<c:if test="${vo.userInfor == '비공개'}">
 					<tr>
-						<td>${vo.idx}</td>
+						<td>${st.count}</td>
 						<td>${vo.mid}</td>
 						<td>${vo.nickName}</td>
 						<td>${vo.name}</td>

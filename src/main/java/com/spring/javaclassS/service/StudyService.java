@@ -3,6 +3,8 @@ package com.spring.javaclassS.service;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.spring.javaclassS.vo.CrimeVO;
 import com.spring.javaclassS.vo.UserVO;
 
@@ -30,6 +32,8 @@ public interface StudyService {
 	public ArrayList<CrimeVO> getYearPoliceListDesc(String police);
 
 	public ArrayList<CrimeVO> getYearStatsCrime(String year, String police);
+
+	public int fileUpload(MultipartFile fName, String mid);
 	
 //	public ArrayList<CrimeVO> getYearPoliceCheck(int year, String police, String yearOrder);
 //

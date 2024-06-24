@@ -1,5 +1,7 @@
 package com.spring.javaclassS.controller;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import javax.mail.MessagingException;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.javaclassS.service.MemberService;
 import com.spring.javaclassS.vo.MemberVO;
@@ -139,7 +142,7 @@ public class MemberController {
 	}
 	
 	@RequestMapping(value = "/memberJoin", method = RequestMethod.POST)
-	public String memberJoinPost(MemberVO vo) {
+	public String memberJoinPost(MultipartFile fName, MemberVO vo) {
 		// 아이디/닉네임 중복체크
 		if(memberService.getMemberIdCheck(vo.getMid()) != null) return "redirect:/message/idCheckNo";
 		if(memberService.getMemberNickCheck(vo.getNickName()) != null) return "redirect:/message/nickCheckNo";
@@ -148,7 +151,7 @@ public class MemberController {
 		vo.setPwd(passwordEncoder.encode(vo.getPwd()));
 		
 		// 회원 사진 처리(service객체에서 처리 후 DB에 저장한다)
-		int res = memberService.setMemberJoinOk(vo);
+		int res = memberService.setMemberJoinOk(fName, vo);
 		if(res != 0) return "redirect:/message/memberJoinOk";
 		else return "redirect:/message/memberJoinNo";
 	}
@@ -267,4 +270,67 @@ public class MemberController {
 		if(passwordEncoder.matches(pwd, vo.getPwd())) return "1";
 		else return "0";
 	}
+	
+	// 비밀번호 변경
+	@ResponseBody
+	@RequestMapping(value = "/memberPwdChangeOk", method=RequestMethod.POST)
+	public String memberPwdChangeOkPost(String pwd, String mid) {
+		return memberService.setPwdChangeOk(mid,passwordEncoder.encode(pwd))+"";
+	}
+	
+	// 회원 리스트
+	@RequestMapping(value = "/memberList", method=RequestMethod.GET)
+	public String memberListGet(Model model, HttpSession session) {
+		int level = (int) session.getAttribute("sLevel");
+		ArrayList<MemberVO> vos = memberService.getMemberList(level);
+		model.addAttribute("vos",vos);
+		return "member/memberList";
+	}
+	
+	// 회원 정보 수정창
+	@RequestMapping(value = "/memberUpdate", method=RequestMethod.GET)
+	public String memberUpdateGet(Model model, String mid, String pwd) {
+		MemberVO vo = memberService.getMemberIdCheck(mid);
+		System.out.println(vo.getTel());
+		String[] tel = vo.getTel().split("-");
+		if(tel[1].equals(" ")) tel[1] = "";
+		if(tel[2].equals(" ")) tel[2] = "";
+		model.addAttribute("tel1", tel[0]);
+		model.addAttribute("tel2", tel[1]);
+		model.addAttribute("tel3", tel[2]);
+		
+		String[] address = vo.getAddress().split("/");
+		if(address[0].equals(" ")) address[0] = "";
+		if(address[1].equals(" ")) address[1] = "";
+		if(address[2].equals(" ")) address[2] = "";
+		if(address[3].equals(" ")) address[3] = "";
+		
+		model.addAttribute("postcode", address[0]);
+		model.addAttribute("roadAddress", address[1]);
+		model.addAttribute("detailAddress", address[2]);
+		model.addAttribute("extraAddress", address[3]);
+		
+		model.addAttribute("vo", vo);
+		return "member/memberUpdate";
+	}
+	// 회원 정보 수정
+	@RequestMapping(value = "/memberUpdate", method = RequestMethod.POST)
+	public String memberUpdatePost(HttpServletRequest request,
+			MultipartFile fName, MemberVO vo) {
+		// 아이디/닉네임 중복체크
+		MemberVO mVo = memberService.getMemberNickCheck(vo.getNickName());
+		if(!mVo.getNickName().equals(vo.getNickName()) && mVo != null) return "redirect:/message/nickCheckNo";
+		
+		// 기존에 있던 파일 삭제
+		if(!vo.getPhoto().equals("noimage.jpg")) {
+			String realPath = request.getSession().getServletContext().getRealPath("/resources/data/member/");
+			File ofName = new File(realPath+vo.getPhoto());
+			ofName.delete();
+		}
+		// 회원 사진 처리(service객체에서 처리 후 DB에 저장한다)
+		int res = memberService.setMemberUpdateOk(fName, vo, vo.getMid());
+		if(res != 0) return "redirect:/message/memberUpdateOk";
+		else return "redirect:/message/memberUpdateNo";
+	}
+	
 }

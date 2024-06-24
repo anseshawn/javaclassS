@@ -22,6 +22,7 @@
 	<resources mapping="/board/**" location="/resources/data/board/" />
 	<resources mapping="/pds/**" location="/resources/data/pds/" />
 	<resources mapping="/photo/**" location="/resources/data/photo/" />
+	<resources mapping="/fileUpload/**" location="/resources/data/fileUpload/" />
 
 	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
 	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -33,5 +34,11 @@
 	
 	<!-- Spring Security의 BCryptPasswordEncoder 객체를 Bean으로 등록 -->
 	<beans:bean id="bCryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+	
+	<!-- 파일 업로드에 필요한 라이브러리 객체를 bean에 등록 -->
+	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<beans:property name="maxUploadSize" value="20971520"/>
+		<beans:property name="defaultEncoding" value="UTF-8"/>
+	</beans:bean>
 	
 </beans:beans>

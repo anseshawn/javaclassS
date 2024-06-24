@@ -104,6 +104,22 @@ public class MessageController {
 			model.addAttribute("msg", mid+"님 로그아웃 되었습니다.");
 			model.addAttribute("url", "/member/memberLogin");
 		}
+		else if(msgFlag.equals("fileUploadOk")) {
+			model.addAttribute("msg", "파일 업로드가 완료되었습니다.");
+			model.addAttribute("url", "/study/fileUpload/fileUpload");
+		}
+		else if(msgFlag.equals("fileUploadNo")) {
+			model.addAttribute("msg", "파일 업로드 실패");
+			model.addAttribute("url", "/study/fileUpload/fileUpload");
+		}
+		else if(msgFlag.equals("memberUpdateOk")) {
+			model.addAttribute("msg", "회원 정보가 수정되었습니다.");
+			model.addAttribute("url", "/member/memberMain");
+		}
+		else if(msgFlag.equals("memberUpdateNo")) {
+			model.addAttribute("msg", "회원 정보 수정 실패");
+			model.addAttribute("url", "/member/memberUpdate");
+		}
 		
 		return "include/message";
 	}

@@ -16,6 +16,10 @@
     
     let nickCheckSw = 0;
     
+    $(function(){
+    	document.getElementById("demoImg").src = "${ctp}/member/${vo.photo}";
+    })
+    
     function fCheck() {
     	// 필수항목 입력여부 확인 
     	let mid = document.getElementById("mid").value.trim();
@@ -102,7 +106,22 @@
     	let extraAddress = myform.extraAddress.value + " ";
     	let address = postcode+"/"+roadAddress+"/"+detailAddress+"/"+extraAddress;
     	
-    	
+    	// 이미지 등록 시키기(파일에 관련된 사항들 체크)
+    	let fName = document.getElementById("file").value;
+    	if(fName.trim() != null && fName.trim() != "") {
+	    	let ext = fName.substring(fName.lastIndexOf(".")+1).toLowerCase();
+	    	let maxSize = 1024 * 1024 * 2;
+	    	let fileSize = document.getElementById("file").files[0].size;
+    		
+	    	if(ext != 'jpg' && ext != 'png' && ext != 'gif' && ext != 'jpeg') {
+	    		alert("사진 파일(jpg/png/gif/jpeg)만 등록 가능합니다.");
+	    		return false;
+	    	}
+	    	else if(fileSize > maxSize) {
+	    		alert("회원 사진의 최대 용량은 2MByte 입니다.");
+	    		return false;
+	    	}
+    	}
     	
     	if(nickCheckSw == 0) {
     		alert("닉네임 중복 체크를 수행해주세요.");
@@ -138,7 +157,7 @@
     	else {
     		nickCheckSw = 1;
     		$.ajax({
-    			url: "${ctp}/MemberNickCheck.mem",
+    			url: "${ctp}/member/memberNickCheck",
     			type: "get",
     			data: {nickName:nickName},
     			success: function(res) {
@@ -174,6 +193,17 @@
     		$("#nickNameBtn").removeAttr("disabled");
     	});
     }
+    
+    // 회원 사진 선택 시 이미지 미리보기
+    function imgCheck(e) {
+    	if(e.files && e.files[0]) {
+    		let reader = new FileReader();
+    		reader.onload = function(e) {
+    			document.getElementById("demoImg").src = e.target.result;
+    		}
+    		reader.readAsDataURL(e.files[0]);
+    	}
+    }
 
   </script>
 </head>
@@ -182,7 +212,7 @@
 <jsp:include page="/WEB-INF/views/include/slide2.jsp" />
 <p><br/></p>
 <div class="container">
-  <form name="myform" method="post" action="${ctp}/MemberUpdateOk.mem" class="was-validated">
+  <form name="myform" method="post" class="was-validated" enctype="multipart/form-data">
     <h2>회 원 가 입</h2>
     <br/>
     <div class="form-group">
@@ -293,7 +323,7 @@
     	<c:set var="varHobbys" value="${fn:split(('등산/낚시/수영/독서/영화감상/바둑/축구/기타'),'/')}"/>
     	<c:forEach var="tempHobby" items="${varHobbys}" varStatus="st">
     		<%-- <input type="checkbox" name="hobby" value="${tempHobby}" <c:if test="${fn:contains(hobby,varHobbys[st.index])}">checked</c:if> /> ${tempHobby}&nbsp; --%>
-    		<input type="checkbox" name="hobby" value="${tempHobby}" <c:if test="${fn:contains(hobby,tempHobby)}">checked</c:if> /> ${tempHobby}&nbsp;
+    		<input type="checkbox" name="hobby" value="${tempHobby}" <c:if test="${fn:contains(vo.hobby,tempHobby)}">checked</c:if> /> ${tempHobby}&nbsp;
     	</c:forEach>
     </div>
     <div class="form-group">
@@ -314,8 +344,8 @@
       </div>
     </div>
     <div  class="form-group">
-      회원 사진(파일용량:2MByte이내) : <img src="${ctp}/images/member/${vo.photo}" width="100px" />
-      <input type="file" name="fName" id="file" class="form-control-file border"/>
+      회원 사진(파일용량:2MByte이내) : <img id="demoImg" width="100px">
+      <input type="file" name="fName" id="file" onchange="imgCheck(this)" class="form-control-file border"/>
     </div>
     <button type="button" class="btn btn-secondary" onclick="fCheck()">수정하기</button> &nbsp;
     <button type="reset" class="btn btn-secondary">다시작성</button> &nbsp;

@@ -36,7 +36,7 @@
   						$("#pwdDemo").show();
   						$("#pwdForm").hide();
   					}
-  					else location.href = "${ctp}/member/memberUpdate";
+  					else location.href = "${ctp}/member/memberUpdate?mid=${sMid}";
   				}
   				else alert("비밀번호가 틀립니다. 다시 확인해주세요.");
   				$("#pwd").focus();
@@ -61,9 +61,23 @@
   			$("#pwdCheck").focus();
   			return false;
   		}
-  		else {
-  			pwdForm.submit();
-  		}
+  		$.ajax({
+  			url : '${ctp}/member/memberPwdChangeOk',
+  			type: "post",
+  			data: {
+  				pwd : pwdCheck,
+  				mid : '${sMid}'
+  			},
+  			success: function(res) {
+  				if(res != "0"){
+	  				alert("비밀번호가 변경되었습니다.\n다시 로그인 하세요.");
+	  				location.href= '${ctp}/member/memberLogout';
+  				}
+  			},
+  			error: function(){
+  				alert("전송오류");
+  			}
+  		});
   	}
   </script>
 </head>
