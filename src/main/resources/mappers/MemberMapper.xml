@@ -49,4 +49,8 @@
 			hobby=#{vo.hobby}, photo=#{vo.photo}, content=#{vo.content}, userInfor=#{vo.userInfor} where mid = #{vo.mid};
 	</update>
 	
+	<update id="setUserDel">
+  	update member2 set userDel = 'OK' where mid = #{mid};
+  </update>
+	
 </mapper>

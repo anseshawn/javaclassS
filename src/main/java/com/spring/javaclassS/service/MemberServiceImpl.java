@@ -102,4 +102,10 @@ public class MemberServiceImpl implements MemberService {
 		
 		return memberDAO.setMemberUpdateOk(vo,mid);
 	}
+
+	// 회원 탈퇴 신청
+	@Override
+	public int setUserDel(String mid) {
+		return memberDAO.setUserDel(mid);
+	}
 }

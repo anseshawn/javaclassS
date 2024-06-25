@@ -36,7 +36,7 @@
   						$("#pwdDemo").show();
   						$("#pwdForm").hide();
   					}
-  					else location.href = "${ctp}/member/memberUpdate?mid=${sMid}";
+  					else location.href = "${ctp}/member/memberUpdate";
   				}
   				else alert("비밀번호가 틀립니다. 다시 확인해주세요.");
   				$("#pwd").focus();

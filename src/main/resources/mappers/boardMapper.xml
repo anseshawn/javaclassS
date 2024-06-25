@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.javaclassS.dao.BoardDAO">
+
+	<select id="getBoardList" resultType="com.spring.javaclassS.vo.BoardVO">
+		select *,datediff(wDate,now()) as date_diff,
+			timestampdiff(hour, wDate, now()) as hour_diff
+			from board2 order by idx desc limit #{startIndexNo},#{pageSize};
+	</select>
+	<select id="getBoardContent" resultType="com.spring.javaclassS.vo.BoardVO">
+		select * from board2 where idx = #{idx};
+	</select>
+	<select id="totRecCnt" resultType="int">
+		select count(*) from board2;
+	</select>
+	
+	<!-- xml에서는 <를 태그로 보기 때문에 비교 시 오류가 남 -->
+	<!-- <![CDATA[]]> <! > : 느낌표-특정 글자를 주석처리 한다 / CDATA는 각괄호로 묶는다 -->
+	<!-- <![CDATA[안에 적힌 코드를 있는 그대로 받아들이게 됨]]> -->
+	<select id="getPreNexSearch" resultType="com.spring.javaclassS.vo.BoardVO">
+		<if test="str=='preVo'">
+			select idx,title from board2 where <![CDATA[idx < #{idx}]]> order by idx desc limit 1;
+		</if>
+		<if test="str!='preVo'">
+			select idx,title from board2 where <![CDATA[idx > #{idx}]]> order by idx limit 1;
+		</if>
+	</select>
+	
+	<insert id="setBoardInput">
+		insert into board2 values(default,#{vo.mid},#{vo.nickName},#{vo.title},#{vo.content},default,#{vo.hostIp},#{vo.openSw},default,default,default);
+	</insert>
+	
+	<update id="setReadNumPlus">
+		update board2 set readNum = readNum + 1 where idx = #{idx};
+	</update>
+</mapper>

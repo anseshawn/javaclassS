@@ -26,4 +26,6 @@ public interface MemberService {
 
 	public int setMemberUpdateOk(MultipartFile fName, MemberVO vo, String mid);
 
+	public int setUserDel(String mid);
+
 }

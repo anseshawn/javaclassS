@@ -1,5 +1,6 @@
 package com.spring.javaclassS.common;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -25,5 +26,13 @@ public class JavaclassProvide {
 		}
 		fos.flush();
 		fos.close();
+	}
+	
+	public void deleteFile(String photo, String urlPath) {
+		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+		String realPath = request.getSession().getServletContext().getRealPath("/resources/data/"+urlPath+"/");
+		
+		File file = new File(realPath + photo);
+		if(file.exists()) file.delete();
 	}
 }
