@@ -58,13 +58,13 @@
 			<th>작성일</th>
 			<th>조회수(❤)</th>
 		</tr>
-		<c:set var="curScrStartNo" value="${curScrStartNo}"/>
+		<c:set var="curScrStartNo" value="${pageVO.curScrStartNo}"/>
 		<c:forEach var="vo" items="${vos}" varStatus="st">
 			<c:if test="${vo.openSw == 'OK' || sLevel == 0 || sNickName == vo.nickName}">
 				<tr>
 					<td>${curScrStartNo}</td>
 					<td class="text-left"> <%-- 페이지 처리하게 되면 페이지 사이즈, 서치 등등 ... 함께 넘겨야함 --%>
-						<a href="BoardContent.bo?idx=${vo.idx}&pag=${pag}&pageSize=${pageSize}&flag=search&search=${search}&searchString=${searchString}">${vo.title}</a>
+						<a href="boardContent?idx=${vo.idx}&pag=${pag}&pageSize=${pageSize}&flag=search&search=${search}&searchString=${searchString}">${vo.title}</a>
 						<c:if test="${vo.hour_diff <= 24}"><img src="${ctp}/images/new.gif"/></c:if> 
 					</td>
 					<td>
@@ -89,14 +89,14 @@
 	<!-- 블록페이지 시작 -->	
 	<div class="text-center">
 		<ul class="pagination justify-content-center" style="margin:20px 0">
-			<c:if test="${pag > 1}"><li class="page-item"><a class="page-link" href="${ctp}/BoardSearchList.bo?search=${search}&searchString=${searchString}&pag=1&pageSize=${pageSize}">처음</a></li></c:if>
-			<c:if test="${curBlock > 0}"><li class="page-item"><a class="page-link" href="${ctp}/BoardSearchList.bo?search=${search}&searchString=${searchString}&pag=${(curBlock-1)*blockSize+1}&pageSize=${pageSize}">이전</a></li></c:if>
-			<c:forEach var="i" begin="${(curBlock*blockSize+1)}" end="${(curBlock)*blockSize+blockSize}" varStatus="st">
-				<c:if test="${i <= totPage && i == pag}"><li class="page-item active"><a class="page-link" href="${ctp}/BoardSearchList.bo?search=${search}&searchString=${searchString}&pag=${i}&pageSize=${pageSize}">${i}</a></li></c:if>
-				<c:if test="${i <= totPage && i != pag}"><li class="page-item"><a class="page-link" href="${ctp}/BoardSearchList.bo?search=${search}&searchString=${searchString}&pag=${i}&pageSize=${pageSize}">${i}</a></li></c:if>
+			<c:if test="${pageVO.pag > 1}"><li class="page-item"><a class="page-link" href="boardSearch?search=${search}&searchString=${searchString}&pag=1&pageSize=${pageVO.pageSize}">처음</a></li></c:if>
+			<c:if test="${pageVO.curBlock > 0}"><li class="page-item"><a class="page-link" href="boardSearch?search=${search}&searchString=${searchString}&pag=${(pageVO.curBlock-1)*pageVO.blockSize+1}&pageSize=${pageVO.pageSize}">이전</a></li></c:if>
+			<c:forEach var="i" begin="${(pageVO.curBlock*pageVO.blockSize+1)}" end="${(pageVO.curBlock)*pageVO.blockSize+pageVO.blockSize}" varStatus="st">
+				<c:if test="${i <= pageVO.totPage && i == pageVO.pag}"><li class="page-item active"><a class="page-link" href="boardSearch?search=${search}&searchString=${searchString}&pag=${i}&pageSize=${pageVO.pageSize}">${i}</a></li></c:if>
+				<c:if test="${i <= pageVO.totPage && i != pageVO.pag}"><li class="page-item"><a class="page-link" href="boardSearch?search=${search}&searchString=${searchString}&pag=${i}&pageSize=${pageVO.pageSize}">${i}</a></li></c:if>
 			</c:forEach>
-			<c:if test="${curBlock < lastBlock}"><li class="page-item"><a class="page-link" href="${ctp}/BoardSearchList.bo?search=${search}&searchString=${searchString}&pag=${(curBlock+1)*blockSize+1}&pageSize=${pageSize}">다음</a></li></c:if>
-			<c:if test="${pag < totPage}"><li class="page-item"><a class="page-link" href="${ctp}/BoardSearchList.bo?search=${search}&searchString=${searchString}&pag=${totPage}&pageSize=${pageSize}">끝</a></li></c:if>
+			<c:if test="${pageVO.curBlock < pageVO.lastBlock}"><li class="page-item"><a class="page-link" href="boardSearch?search=${search}&searchString=${searchString}&pag=${(pageVO.curBlock+1)*pageVO.blockSize+1}&pageSize=${pageVO.pageSize}">다음</a></li></c:if>
+			<c:if test="${pageVO.pag < pageVO.totPage}"><li class="page-item"><a class="page-link" href="boardSearch?search=${search}&searchString=${searchString}&pag=${pageVO.totPage}&pageSize=${pageVO.pageSize}">끝</a></li></c:if>
 		</ul>
 	</div>
 	<!-- 블록페이지 끝 -->
@@ -117,7 +117,7 @@
 	</div>
 	 -->
 	<!-- 검색기 끝 -->
-	<input type="button" value="돌아가기" onclick="location.href='BoardList.bo';" class="btn btn-warning form-control" />
+	<input type="button" value="돌아가기" onclick="location.href='boardList';" class="btn btn-warning form-control" />
 </div>
 <p><br/></p>
 

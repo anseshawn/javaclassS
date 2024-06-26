@@ -13,7 +13,10 @@ public class MessageController {
 	@RequestMapping(value = "/message/{msgFlag}", method = RequestMethod.GET)
 	public String getMessage(Model model,
 			@PathVariable String msgFlag,
-			@RequestParam(name="mid", defaultValue = "", required = false) String mid
+			@RequestParam(name="mid", defaultValue = "", required = false) String mid,
+			@RequestParam(name="idx", defaultValue = "", required = false) String idx,
+			@RequestParam(name="pag", defaultValue = "1", required = false) String pag,
+			@RequestParam(name="pageSize", defaultValue = "5", required = false) String pageSize
 			) {
 		
 		if(msgFlag.equals("userDeleteOk")) {
@@ -139,6 +142,22 @@ public class MessageController {
 		else if(msgFlag.equals("boardInputNo")) {
 			model.addAttribute("msg", "글쓰기 실패");
 			model.addAttribute("url", "/board/boardInput");
+		}
+		else if(msgFlag.equals("boardUpdateOk")) {
+			model.addAttribute("msg", "게시글이 수정되었습니다.");
+			model.addAttribute("url", "/board/boardContent?idx="+idx+"&pag="+pag+"&pageSize="+pageSize);
+		}
+		else if(msgFlag.equals("boardUpdateNo")) {
+			model.addAttribute("msg", "게시글 수정 실패");
+			model.addAttribute("url", "/board/boardUpdate?idx="+idx+"&pag="+pag+"&pageSize="+pageSize);
+		}
+		else if(msgFlag.equals("boardDeleteOk")) {
+			model.addAttribute("msg", "게시글이 삭제되었습니다.");
+			model.addAttribute("url", "/board/boardList");
+		}
+		else if(msgFlag.equals("boardDeleteNo")) {
+			model.addAttribute("msg", "게시글 삭제 실패");
+			model.addAttribute("url", "/board/boardContent?idx="+idx+"&pag="+pag+"&pageSize="+pageSize);
 		}
 		
 		return "include/message";

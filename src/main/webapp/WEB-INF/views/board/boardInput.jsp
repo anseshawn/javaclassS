@@ -16,7 +16,7 @@
 <p><br/></p>
 <div class="container">
 	<h2 class="text-center">게 시 판 글 쓰 기</h2>
-	<form name="myform" method="post">
+	<form name="myform" method="post"> <!-- 기타 파일 첨부할 때엔 enctype 이용해야함 -->
 		<table class="table table-bordered">
 			<tr>
 				<th>글쓴이</th>
