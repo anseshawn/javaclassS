@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.spring.javaclassS.vo.CrimeVO;
 import com.spring.javaclassS.vo.UserVO;
@@ -34,7 +35,9 @@ public interface StudyService {
 	public ArrayList<CrimeVO> getYearStatsCrime(String year, String police);
 
 	public int fileUpload(MultipartFile fName, String mid);
-	
+
+	public int multiFileUpload(MultipartHttpServletRequest mFile);
+
 //	public ArrayList<CrimeVO> getYearPoliceCheck(int year, String police, String yearOrder);
 //
 //	public CrimeVO getAnalyzeTotal(int year, String police);

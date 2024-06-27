@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.spring.javaclassS.common.JavaclassProvide;
 import com.spring.javaclassS.dao.StudyDAO;
 import com.spring.javaclassS.vo.CrimeVO;
 import com.spring.javaclassS.vo.UserVO;
@@ -24,6 +27,9 @@ public class StudyServiceImpl implements StudyService {
 	
 	@Autowired
 	StudyDAO studyDAO;
+	
+	@Autowired
+	JavaclassProvide javaclassProvide;
 
 	@Override
 	public String[] getCityStringArray(String dodo) {
@@ -247,6 +253,40 @@ public class StudyServiceImpl implements StudyService {
 		}
 		fos.flush();
 		fos.close();
+	}
+
+	@Override
+	public int multiFileUpload(MultipartHttpServletRequest mFile) {
+		int res = 0;
+		
+		try {
+			// 여러개가 들어오면 한개 파일 타입으로 받는다
+			List<MultipartFile> fileList = mFile.getFiles("fName"); // form 에서 fName으로 넘어오는 파일들
+			String oFileNames = "";
+			String sFileNames = "";
+			int fileSizes = 0;
+			
+			for(MultipartFile file : fileList) {
+				// System.out.println("원본파일 : "+ file.getOriginalFilename());
+				String oFileName = file.getOriginalFilename();
+				String sFileName = javaclassProvide.saveFileName(oFileName);
+				
+				javaclassProvide.writeFile(file, sFileName, "fileUpload");
+				
+				oFileNames += oFileName + "/";				
+				sFileNames += sFileName + "/";
+				fileSizes += file.getSize();
+			}
+			oFileNames = oFileNames.substring(0, oFileNames.length()-1);
+			sFileNames = sFileNames.substring(0, sFileNames.length()-1);
+			
+			System.out.println("원본파일 : "+oFileNames);
+			System.out.println("저장파일 : "+sFileNames);
+			System.out.println("파일크기 : "+fileSizes);
+			
+			res = 1;
+		} catch (IOException e) {e.printStackTrace();}
+		return res;
 	}
 	
 	/*
