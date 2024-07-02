@@ -1,6 +1,12 @@
 package com.spring.javaclassS.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -89,6 +95,61 @@ public class PdsController {
 		model.addAttribute("vo", vo);
 		
 		return "pds/pdsContent";
+	}
+	
+	// 자료 전체 다운로드
+	@RequestMapping(value = "/pdsTotalDown", method = RequestMethod.GET)
+	public String pdsTotalDownGet(HttpServletRequest request, int idx) throws IOException {
+		// 다운로드 수 증가하기
+		pdsService.setPdsDownNumPlus(idx);
+		
+		// 여러개의 파일을 하나의 파일(zip)로 압축(통합)하여 다운로드 시켜준다. 압축파일의 이름은 '제목.zip'으로 처리한다.
+		String realPath = request.getSession().getServletContext().getRealPath("/resources/data/pds/");
+		
+		PdsVO vo = pdsService.getPdsContent(idx);
+		
+		// if(vo.getFName().contains("/")) 이거 안줘도 되나??
+		String[] fNames = vo.getFName().split("/");
+		String[] fSNames = vo.getFSName().split("/");
+		
+		String zipPath = realPath+"temp/";
+		String zipName = vo.getTitle()+".zip";
+		
+		FileInputStream fis = null;
+		FileOutputStream fos = null;
+		
+		ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(zipPath+zipName)); // 생성할 땐 실제 객체를 넣어줘야 한다
+		
+		byte[] bytes = new byte[2048];
+		
+		for(int i=0; i<fNames.length; i++) {
+			fis = new FileInputStream(realPath + fSNames[i]);
+			fos = new FileOutputStream(zipPath + fNames[i]);
+			File copyFile = new File(zipPath+fNames[i]);
+			
+			// pds폴더의 파일을 temp폴더로 복사
+			int data = 0;
+			while((data = fis.read(bytes,0,bytes.length)) != -1) { // bytes가 존재하는 동안
+				fos.write(bytes,0,data); // 0에서 읽어온 것 만큼(data)
+			}
+			fos.flush();
+			fos.close();
+			fis.close();
+			
+			// temp폴더로 복사된 파일을 zip파일에 담는다
+			fis = new FileInputStream(copyFile);
+			zout.putNextEntry(new ZipEntry(fNames[i]));
+			while((data = fis.read(bytes, 0, bytes.length)) != -1) {
+				zout.write(bytes,0,data);
+			}
+			zout.flush();
+			zout.closeEntry();
+			fis.close();
+		}
+		zout.close();
+		
+		// 클라이언트로 압축된 파일 전송하기
+		return "redirect:/fileDownAction?path=pds&file="+java.net.URLEncoder.encode(zipName); // 한글 인코딩해서 넘기기
 	}
 	
 	

@@ -265,22 +265,23 @@
       <div class="input-group mb-3">
         <div class="input-group-prepend">
           <span class="input-group-text">전화번호 :</span> &nbsp;&nbsp;
+          	<c:set var="tel" value="${fn:split(vo.tel,'-')}"/>
             <select name="tel1" class="custom-select">
-              <option value="010" ${tel1=='010' ? 'selected' : ''}>010</option>
-              <option value="02" ${tel1=='02' ? 'selected' : ''}>서울</option>
-              <option value="031" ${tel1=='031' ? 'selected' : ''}>경기</option>
-              <option value="032" ${tel1=='032' ? 'selected' : ''}>인천</option>
-              <option value="041" ${tel1=='041' ? 'selected' : ''}>충남</option>
-              <option value="042" ${tel1=='042' ? 'selected' : ''}>대전</option>
-              <option value="043" ${tel1=='043' ? 'selected' : ''}>충북</option>
-              <option value="051" ${tel1=='051' ? 'selected' : ''}>부산</option>
-              <option value="052" ${tel1=='052' ? 'selected' : ''}>울산</option>
-              <option value="061" ${tel1=='061' ? 'selected' : ''}>전북</option>
-              <option value="062" ${tel1=='062' ? 'selected' : ''}>광주</option>
+              <option value="010" ${tel[0]=='010' ? 'selected' : ''}>010</option>
+              <option value="02" ${tel[0]=='02' ? 'selected' : ''}>서울</option>
+              <option value="031" ${tel[0]=='031' ? 'selected' : ''}>경기</option>
+              <option value="032" ${tel[0]=='032' ? 'selected' : ''}>인천</option>
+              <option value="041" ${tel[0]=='041' ? 'selected' : ''}>충남</option>
+              <option value="042" ${tel[0]=='042' ? 'selected' : ''}>대전</option>
+              <option value="043" ${tel[0]=='043' ? 'selected' : ''}>충북</option>
+              <option value="051" ${tel[0]=='051' ? 'selected' : ''}>부산</option>
+              <option value="052" ${tel[0]=='052' ? 'selected' : ''}>울산</option>
+              <option value="061" ${tel[0]=='061' ? 'selected' : ''}>전북</option>
+              <option value="062" ${tel[0]=='062' ? 'selected' : ''}>광주</option>
             </select>-
         </div>
-        <input type="text" name="tel2" value="${tel2}" size=4 maxlength=4 class="form-control"/>-
-        <input type="text" name="tel3" value="${tel3}" size=4 maxlength=4 class="form-control"/>
+        <input type="text" name="tel2" value="${tel[1]}" size=4 maxlength=4 class="form-control"/>-
+        <input type="text" name="tel3" value="${tel[2]}" size=4 maxlength=4 class="form-control"/>
       </div>
     </div>
     <div class="form-group">

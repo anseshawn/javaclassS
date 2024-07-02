@@ -1,6 +1,7 @@
 package com.spring.javaclassS.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -8,6 +9,11 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -23,6 +29,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.spring.javaclassS.service.DbtestService;
 import com.spring.javaclassS.service.StudyService;
+import com.spring.javaclassS.vo.CrawlingVO;
 import com.spring.javaclassS.vo.CrimeVO;
 import com.spring.javaclassS.vo.MailVO;
 import com.spring.javaclassS.vo.UserVO;
@@ -371,6 +378,180 @@ public class StudyController {
 		
 		if(res != 0) return "redirect:/message/multiFileUploadOk";
 		else return "redirect:/message/multiFileUploadNo";
+	}
+	
+	// 크롤링연습(jsoup)
+	@RequestMapping(value = "/crawling/jsoup", method = RequestMethod.GET)
+	public String jsoupGet() {
+		return "study/crawling/jsoup";
+	}
+	/*
+	// 크롤링연습 처리(jsoup)
+	@ResponseBody
+	@RequestMapping(value = "/crawling/jsoup", method = RequestMethod.POST, produces="application/text; charset=utf-8")
+	public String jsoupPost(String url, String selector) throws IOException {
+		Connection conn = Jsoup.connect(url);
+		Document document = conn.get();
+		//System.out.println("document: "+document);
+		
+		Elements selects = document.select(selector);
+		//System.out.println(selects);
+		//System.out.println(selects.text());
+		
+		String str = "";
+		int i=0;
+		for(Element select : selects) {
+			i++;
+			System.out.println(i+" : "+select.text());
+			str += i + " : " +select+"<br/>";
+		}
+		
+		return str;
+	}
+	*/
+	
+	// 크롤링연습 결과 객체 처리(jsoup) (한글 인코딩 필요 없음)
+	@ResponseBody
+	@RequestMapping(value = "/crawling/jsoup", method = RequestMethod.POST)
+	public ArrayList<String> jsoupPost(String url, String selector) throws IOException {
+		Connection conn = Jsoup.connect(url);
+		Document document = conn.get();
+		
+		Elements selects = document.select(selector);
+		
+		ArrayList<String> vos = new ArrayList<String>(); // 타이틀, 그림, 출처 등 같이 가져오려면 vo타입으로
+		int i=0;
+		for(Element select : selects) {
+			i++;
+			System.out.println(i+" : "+select);
+			//System.out.println(i+" : "+select.text());
+			vos.add( i + " : " +select.html().replace("data-onshow-", ""));
+		}
+		
+		return vos;
+	}
+	
+	
+	// 크롤링연습 결과 객체 처리2(jsoup) (네이버 뉴스 헤드라인 가져오기)
+	@ResponseBody
+	@RequestMapping(value = "/crawling/jsoup2", method = RequestMethod.POST)
+	public ArrayList<CrawlingVO> jsoup2Post() throws IOException {
+		Connection conn = Jsoup.connect("https://news.naver.com/");
+		Document document = conn.get();
+		
+		Elements selects = null;
+		
+		ArrayList<String> titleVos = new ArrayList<String>();
+		selects = document.select("div.cjs_t");
+		for(Element select : selects) {
+			titleVos.add(select.html());
+		}
+		
+		ArrayList<String> imageVos = new ArrayList<String>();
+		selects = document.select("div.cjs_news_mw");
+		for(Element select : selects) {
+			imageVos.add(select.html().replace("data-onshow-", ""));
+		}
+		
+		ArrayList<String> broadcastVos = new ArrayList<String>();
+		selects = document.select("h4.channel");
+		for(Element select : selects) {
+			broadcastVos.add(select.html());
+		}
+		
+		ArrayList<CrawlingVO> vos = new ArrayList<CrawlingVO>();
+		CrawlingVO vo = null;
+		for(int i=0; i<titleVos.size(); i++) {
+			vo = new CrawlingVO();
+			vo.setItem1(titleVos.get(i));
+			vo.setItem2(imageVos.get(i));
+			vo.setItem3(broadcastVos.get(i));
+			vos.add(vo);
+		}
+		
+		return vos;
+	}
+	
+	// 크롤링연습 결과 객체 처리3(jsoup) (다음 연예 뉴스 가져오기)
+	@ResponseBody
+	@RequestMapping(value = "/crawling/jsoup3", method = RequestMethod.POST)
+	public ArrayList<CrawlingVO> jsoup3Post() throws IOException {
+		Connection conn = Jsoup.connect("https://entertain.daum.net/");
+		Document document = conn.get();
+		
+		Elements selects = null;
+		
+		ArrayList<String> titleVos = new ArrayList<String>();
+		selects = document.select("ul.list_news strong.tit_thumb");
+		for(Element select : selects) {
+			titleVos.add(select.html());
+		}
+		
+		ArrayList<String> imageVos = new ArrayList<String>();
+		selects = document.select("ul.list_news a.link_thumb");
+		for(Element select : selects) {
+			imageVos.add(select.html());
+		}
+		
+		ArrayList<String> broadcastVos = new ArrayList<String>();
+		selects = document.select("ul.list_news span.info_thumb");
+		for(Element select : selects) {
+			broadcastVos.add(select.html());
+		}
+		
+		ArrayList<CrawlingVO> vos = new ArrayList<CrawlingVO>();
+		CrawlingVO vo = null;
+		for(int i=0; i<titleVos.size(); i++) {
+			vo = new CrawlingVO();
+			vo.setItem1(titleVos.get(i));
+			vo.setItem2(imageVos.get(i));
+			vo.setItem3(broadcastVos.get(i));
+			vos.add(vo);
+		}
+		
+		return vos;
+	}
+	
+	// 크롤링연습 결과 객체 처리4(jsoup) (네이버 검색어를 이용한 검색처리)
+	@ResponseBody
+	@RequestMapping(value = "/crawling/jsoup4", method = RequestMethod.POST)
+	public ArrayList<String> jsoup4Post(String search, String searchSelector) throws IOException {
+		Connection conn = Jsoup.connect(search);
+		Document document = conn.get();
+		
+		Elements selects = document.select(searchSelector);
+		
+		ArrayList<String> vos = new ArrayList<String>();
+		
+		int i=0;
+		for(Element select : selects) {
+			i++;
+			// System.out.println(i+" : "+select);
+			vos.add(i+" : "+select.html());
+		}
+		
+		return vos;
+	}
+	
+	// 크롤링연습 결과 객체 처리5(jsoup) (네이버 검색어로 그림 검색결과 가져오기)
+	@ResponseBody
+	@RequestMapping(value = "/crawling/jsoup5", method = RequestMethod.POST)
+	public ArrayList<String> jsoup5Post(String search, String searchSelector) throws IOException {
+		Connection conn = Jsoup.connect(search);
+		Document document = conn.get();
+		
+		Elements selects = document.select(searchSelector);
+		
+		ArrayList<String> vos = new ArrayList<String>();
+		
+		int i=0;
+		for(Element select : selects) {
+			i++;
+			// System.out.println(i+" : "+select);
+			vos.add(i+" : "+select.html().replace("data-lazy", ""));
+		}
+		
+		return vos;
 	}
 	
 }

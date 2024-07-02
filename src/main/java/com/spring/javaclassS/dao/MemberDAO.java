@@ -8,24 +8,28 @@ import com.spring.javaclassS.vo.MemberVO;
 
 public interface MemberDAO {
 
-	MemberVO getMemberIdCheck(@Param("mid") String mid);
+	public MemberVO getMemberIdCheck(@Param("mid") String mid);
 
-	MemberVO getMemberNickCheck(@Param("nickName") String nickName);
+	public MemberVO getMemberNickCheck(@Param("nickName") String nickName);
 
-	int setMemberJoinOk(@Param("vo") MemberVO vo);
+	public int setMemberJoinOk(@Param("vo") MemberVO vo);
 
-	void setMemberPasswordUpdate(@Param("mid") String mid,@Param("pwd")  String pwd);
+	public void setMemberPasswordUpdate(@Param("mid") String mid,@Param("pwd")  String pwd);
 
-	MemberVO getMemberNameCheck(@Param("name") String name);
+	public MemberVO getMemberNameCheck(@Param("name") String name);
 
-	void setMemberInforUpdate(@Param("mid") String mid, @Param("point") int point);
+	public void setMemberInforUpdate(@Param("mid") String mid, @Param("point") int point);
 
-	int setPwdChangeOk(@Param("mid") String mid, @Param("pwd") String pwd);
+	public int setPwdChangeOk(@Param("mid") String mid, @Param("pwd") String pwd);
 
-	ArrayList<MemberVO> getMemberList(@Param("level") int level);
+	public ArrayList<MemberVO> getMemberList(@Param("level") int level);
 
-	int setMemberUpdateOk(@Param("vo") MemberVO vo, @Param("mid") String mid);
+	public int setMemberUpdateOk(@Param("vo") MemberVO vo, @Param("mid") String mid);
 
-	int setUserDel(String mid);
+	public int setUserDel(String mid);
+
+	public MemberVO getMemberNickNameEmailCheck(@Param("nickName") String nickName, @Param("email") String email);
+
+	public void setKakaoMemberInput(@Param("mid") String mid, @Param("pwd") String pwd, @Param("nickName") String nickName, @Param("email") String email);
 
 }

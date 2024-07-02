@@ -99,12 +99,20 @@ public class MessageController {
 			model.addAttribute("msg", mid+"님 로그인 되었습니다.");
 			model.addAttribute("url", "/member/memberMain");
 		}
+		else if(msgFlag.equals("memberLoginNewOk")) {
+			model.addAttribute("msg", mid+"님 로그인 되었습니다.\\n신규 비밀번호가 발급되었습니다. 이메일 확인 후 회원정보를 변경해주세요.");
+			model.addAttribute("url", "/member/memberMain");
+		}
 		else if(msgFlag.equals("memberLoginNo")) {
 			model.addAttribute("msg", "회원 정보가 맞지 않습니다. 다시 로그인 해주세요.");
 			model.addAttribute("url", "/member/memberLogin");
 		}
 		else if(msgFlag.equals("memberLogout")) {
 			model.addAttribute("msg", mid+"님 로그아웃 되었습니다.");
+			model.addAttribute("url", "/member/memberLogin");
+		}
+		else if(msgFlag.equals("kakaoLogout")) {
+			model.addAttribute("msg", mid+"님 로그아웃 되었습니다.(kakao)");
 			model.addAttribute("url", "/member/memberLogin");
 		}
 		else if(msgFlag.equals("fileUploadOk")) {
@@ -174,6 +182,10 @@ public class MessageController {
 		else if(msgFlag.equals("pdsUploadNo")) {
 			model.addAttribute("msg", "파일 업로드 실패");
 			model.addAttribute("url", "/pds/pdsInput");
+		}
+		else if(msgFlag.equals("midSameSearch")) {
+			model.addAttribute("msg", "같은 아이디를 가진 회원이 존재합니다.\\n아이디 확인 후 다시 로그인해 주세요.");
+			model.addAttribute("url", "/member/memberLogin");
 		}
 		
 		return "include/message";

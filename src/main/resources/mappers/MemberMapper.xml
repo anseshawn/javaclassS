@@ -25,11 +25,19 @@
 		select * from member2 <if test="level != 0"> where userInfor='공개'</if> order by nickName;
 	</select>
 	
+	<select id="getMemberNickNameEmailCheck" resultType="com.spring.javaclassS.vo.MemberVO">
+		select * from member2 where nickName=#{nickName} and email=#{email} limit 1;
+	</select>
+	
 	
 	<insert id="setMemberJoinOk">
 		insert into member2 values(default, #{vo.mid}, #{vo.pwd}, #{vo.nickName}, #{vo.name}, #{vo.gender},
 		 #{vo.birthday}, #{vo.tel}, #{vo.address}, #{vo.email}, #{vo.homePage}, #{vo.job}, #{vo.hobby},
 		 #{vo.photo}, #{vo.content}, #{vo.userInfor},default,default,default,default,default,default,default);
+	</insert>
+	
+	<insert id="setKakaoMemberInput">
+		insert into member2 (mid, pwd, nickName, name, email, level) values(#{mid}, #{pwd}, #{nickName}, #{nickName}, #{email}, 2);
 	</insert>
 	
 	
