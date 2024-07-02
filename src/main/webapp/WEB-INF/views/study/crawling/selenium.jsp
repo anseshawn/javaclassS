@@ -10,70 +10,22 @@
 	<script>
 		'use strict';
 		
-		$(function(){
-			$("#url").change(function(){
-				let url = document.querySelector("select[name=url]");
-				let urlNo = url.options[url.selectedIndex].text.substring(0, url.options[url.selectedIndex].text.indexOf(".")); //~.options[].text : 해당 옵션의 텍스트 문장
-				
-				let temp = "<option>";
-				let selector = document.myform.selector;
-				for(let i=0; i<selector.length; i++) {
-					if(urlNo == selector[i].value.substring(0,selector[i].value.indexOf("."))) {
-						temp += selector[i].value;
-						break;
-					}
-				}
-				temp += "</option>";
-				$("#selector").html(temp);
-			});
-		});
-		
 		function crawling1() {
-			let url = document.getElementById("url").value;
-			let selector = document.getElementById("selector").value;
-			
-			if(url.trim()=="") {
-				alert("웹크롤링할 주소를 입력하세요.");
-				return false;
-			}
+			$("#spinnerIcon").show();
 			
 			$.ajax({
-				url: "${ctp}/study/crawling/jsoup",
-				type: "post",
-				data: {
-					url: url.substring(url.indexOf("-")+1),
-					selector: selector.substring(selector.indexOf(".")+1)
-				},
-				success: function(vos) {
-					if(vos != "") {
-						let str = "";
-						for(let i=0; i<vos.length; i++) {
-							str += vos[i] + "<br/>";
-						}
-						$("#demo").html(str);
-					}
-					else $("#demo").html("검색된 자료가 없습니다.");
-				},
-				error: function() {
-					alert("전송오류");
-				}
-			});
-		}
-		
-		function crawling2() {
-			$.ajax({
-				url: "${ctp}/study/crawling/jsoup2",
+				url: "${ctp}/study/crawling/selenium",
 				type: "post",
 				success: function(vos) {
 					if(vos != "") {
 						let str = '<table class="table table-bordered text-center">';
-						str += '<tr class="table-secondary"><th>번호</th><th>제목</th><th>기사사진</th><th>언론사</th></tr>';
+						str += '<tr class="table-secondary"><th>번호</th><th>영화제목</th><th>포스터</th><th>예매율</th></tr>';
 						for(let i=0; i<vos.length; i++) {
 							str += '<tr>';
 							str += "<td>" + (i+1) + "</td>";
-							str += "<td>" + vos[i].item1 + "</td>";
-							str += "<td>" + vos[i].item2 + "</td>";
-							str += "<td>" + vos[i].item3 + "</td>";
+							str += "<td>" + vos[i].title + "</td>";
+							str += "<td>" + vos[i].image + "</td>";
+							str += "<td>" + vos[i].percent + "</td>";
 							str += '</tr>';
 						}
 						str += '<tr><td colspan="4" class="m-0 p-0"></td></tr>';
@@ -81,113 +33,51 @@
 						$("#demo").html(str);
 					}
 					else $("#demo").html("검색된 자료가 없습니다.");
+					$("#spinnerIcon").hide();
 				},
-				error: function() {
+				error: function(){
 					alert("전송오류");
 				}
 			});
 		}
 		
-		function crawling3() {
-			$.ajax({
-				url: "${ctp}/study/crawling/jsoup3",
-				type: "post",
-				success: function(vos) {
-					if(vos != "") {
-						let str = '<table class="table table-bordered text-center">';
-						str += '<tr class="table-secondary"><th>번호</th><th>연예소식</th><th>사진</th><th>언론사</th></tr>';
-						for(let i=0; i<vos.length; i++) {
-							str += '<tr>';
-							str += "<td>" + (i+1) + "</td>";
-							str += "<td>" + vos[i].item1 + "</td>";
-							str += "<td>" + vos[i].item2 + "</td>";
-							str += "<td>" + vos[i].item3 + "</td>";
-							str += '</tr>';
-						}
-						str += '<tr><td colspan="4" class="m-0 p-0"></td></tr>';
-						str += '</table>';
-						$("#demo").html(str);
-					}
-					else $("#demo").html("검색된 자료가 없습니다.");
-				},
-				error: function() {
-					alert("전송오류");
-				}
-			});
-		}
-		
-		// 네이버 검색어로 검색결과 가져오기
-		function crawling4() {
-			let searchString = document.getElementById("searchString").value;
-			let page = document.getElementById("page").value;
-			if(searchString.trim() == "") {
-				alert("검색어를 입력하세요.");
-				document.getElementById("searchString").focus();
-				return false;
-			}
-			if(page.trim() == "") page = 1;
-			
-			let search = "https://search.naver.com/search.naver?nso=&page="+page+"&query="+searchString+"&sm=tab_pge&start="+(page*15+1)+"&where=web";
-			let searchSelector = "div.total_dsc_wrap";
-			
-			$.ajax({
-				url: "${ctp}/study/crawling/jsoup4",
-				type: "post",
-				data: {
-					search: search,
-					searchSelector: searchSelector
-				},
-				success: function(vos) {
-					if(vos != "") {
-						let str = "";
-						for(let i=0; i<vos.length; i++) {
-							str += vos[i] + "<br/>";
-						}
-						$("#demo").html(str);
-					}
-					else $("#demo").html("검색된 자료가 없습니다.");
-				},
-				error: function() {
-					alert("전송오류");
-				}
-			});
-		}
-		
-		// 네이버 검색어로 검색결과 가져오기
-		function crawling5() {
-			let searchString = document.getElementById("searchString2").value;
-			let page = document.getElementById("page2").value;
-			if(searchString.trim() == "") {
-				alert("검색어를 입력하세요.");
-				document.getElementById("searchString2").focus();
-				return false;
-			}
-			if(page.trim() == "") page = 1;
-			
-			let search = "https://search.naver.com/search.naver?nso=&page="+page+"&query="+searchString+"&sm=tab_pge&start="+(page*15+1)+"&where=web";
-			let searchSelector = "div.total_wrap";
-			
-			$.ajax({
-				url: "${ctp}/study/crawling/jsoup5",
-				type: "post",
-				data: {
-					search: search,
-					searchSelector: searchSelector
-				},
-				success: function(vos) {
-					if(vos != "") {
-						let str = "";
-						for(let i=0; i<vos.length; i++) {
-							str += vos[i] + "<br/>";
-						}
-						$("#demo").html(str);
-					}
-					else $("#demo").html("검색된 자료가 없습니다.");
-				},
-				error: function() {
-					alert("전송오류");
-				}
-			});
+		// SRT 열차 조회
+		function crawlingCheck() {
+			$("#spinnerIcon").show();
+    	let stationStart = $("#stationStart").val();
+    	let stationStop = $("#stationStop").val();
+    	
+    	$.ajax({
+    		url   : "${ctp}/study/crawling/train",
+    		type  : "post",
+    		data  : {
+    			stationStart : stationStart,
+    			stationStop : stationStop
+    		},
+    		success: function(vos){
+    			if(vos != "") {
+    				let str = '';
+    				str += '<table class="table table-bordered text-center"><tr class="table-dark text-dark"><th>열차</th><th>출발</th><th>도착</th><th>소요시간</th><th>요금</th></tr>';
+    				for(let i=0; i<vos.length; i++) {
+	    				str += '<tr>';
+	    				str += '<td>'+vos[i].train+'</td>';
+	    				str += '<td>'+vos[i].start+'</td>';
+	    				str += '<td>'+vos[i].arrive+'</td>';
+	    				str += '<td>'+vos[i].time+'</td>';
+	    				str += '<td><a href="${ctp}/data/ckeditor/screenshot.png" target="_blank">'+vos[i].price+'</a></td>';
+	    				str += '</tr>';
+    				}
+    				str += '</tr></table>';
+    				$("#demo").html(str);
+    				
+	  				$("#spinnerIcon").hide();
+    			}
+    			else $("#demo").html("검색한 자료가 없습니다.");
+    		},
+    		error: function(){
+    			alert("전송오류");
+    		}
+    	});
 		}
 	</script>
 </head>
@@ -196,55 +86,35 @@
 <jsp:include page="/WEB-INF/views/include/slide2.jsp" />
 <p><br/></p>
 <div class="container">
-	<h2>JSOUP를 이용한 웹 크롤링</h2>
+	<h2>selenium을 이용한 웹 크롤링</h2>
 	<hr/>
 	<div><a href="javascript:location.reload()" class="btn btn-warning form-control">다시검색</a></div>
 	<hr/>
 	<form name="myform">
 		<div class="input-group mb-3">
-			<div class="input-group-text">크롤링 할 웹 주소</div>
-			<select name="url" id="url" class="form-control">
-				<option value="">URL을 선택하세요</option>
-				<option>1.네이버뉴스-https://news.naver.com/</option>
-				<option>2.네이버뉴스사진-https://news.naver.com/</option>
-				<option>3.언론사이름-https://news.naver.com/</option>
-				<option></option>
-				<option></option>
-			</select>
+			<div class="input-group-text">CGV상영관 무비차트</div>
+			<div class="input-group-append mr-5"><input type="button" value="크롤링1" onclick="crawling1()" class="btn btn-success"/></div>
+			<div class="input-group-append">
+				<span id="spinnerIcon" style="display:none;"><span class="spinner-border text-muted"></span></span>
+			</div>
 		</div>
-		<div class="input-group mb-3">
-			<div class="input-group-text">크롤링 할 셀렉터</div>
-			<select name="selector" id="selector" class="form-control">
-				<option value="">셀렉터를 선택하세요</option>
-				<option>1.div.cjs_t</option>
-				<option>2.div.cjs_news_mw</option>
-				<!-- <option>3.div.cjs_ctw</option> -->
-				<option>3.h4.channel</option>
-			</select>
-			<div class="input-group-append"><input type="button" value="크롤링1" onclick="crawling1()" class="btn btn-success"/></div>
-		</div>
-		<div class="mb-3"><input type="button" value="크롤링2(네이버주요뉴스검색)" onclick="crawling2()" class="btn btn-primary"/></div>
-		<div><input type="button" value="크롤링3(다음연예뉴스검색)" onclick="crawling3()" class="btn btn-info"/></div>
-		<hr/>
-		<div class="input-group mb-3">
-			<div class="input-group-text">네이버 검색어로 검색(검색어)</div>
-			<input type="text" name="searchString" id="searchString" value="인사이드아웃2" class="form-control" />
-		</div>
-		<div class="input-group mb-3">
-			<div class="input-group-text">네이버 검색어로 검색(페이지번호)</div>
-			<input type="text" name="page" id="page" value="2" class="form-control" />
-			<div class="input-group-append"><input type="button" value="크롤링4" onclick="crawling4()" class="btn btn-outline-success"/></div>
-		</div>
-		<hr/>
-		<div class="input-group mb-3">
-			<div class="input-group-text">네이버 검색어로 검색(이미지포함)</div>
-			<input type="text" name="searchString2" id="searchString2" value="인사이드아웃2" class="form-control" />
-		</div>
-		<div class="input-group mb-3">
-			<div class="input-group-text">네이버 검색어로 검색(페이지번호)</div>
-			<input type="text" name="page2" id="page2" value="2" class="form-control" />
-			<div class="input-group-append"><input type="button" value="크롤링5" onclick="crawling5()" class="btn btn-outline-success"/></div>
-		</div>
+	</form>
+	<hr/>
+	<form name="trainform">
+    <div class="input-group mb-3">
+      <span class="input-group-text mr-2">출발역</span>
+      <div class="input-group-append mr-3"><input type="text" name="stationStart" id="stationStart" value="대전" class="form-control"/></div>
+      ~
+      <span class="input-group-text ml-3 mr-2">도착역</span>
+      <div class="input-group-append"><input type="text" name="stationStop" id="stationStop" value="부산" class="form-control"/></div>
+    </div>
+   	<div class="input-group mb-3">
+	    <div class="input-group-prepend"><input type="button" value="새로고침" onclick="location.reload()" class="btn btn-info" /></div>
+	    <span class="input-group-text" style="width:50%">SRT 열차 시간표 조회</span>
+	    <div class="input-group-append mr-1"><input type="button" value="웹크롤링" onclick="crawlingCheck()" class="btn btn-success" /></div>
+	    <div class="input-group-append"><span id="spinnerIcon" style="display:none"><span class="spinner-border"></span>검색중입니다.</span></div>
+	  </div>
+	  <hr/>
 	</form>
 	<hr/>
 	<div id="demo"></div>

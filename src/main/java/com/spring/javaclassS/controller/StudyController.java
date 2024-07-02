@@ -4,16 +4,24 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FileUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -552,6 +560,140 @@ public class StudyController {
 		}
 		
 		return vos;
+	}
+	
+	// 크롤링연습(selenium)
+	@RequestMapping(value = "/crawling/selenium", method = RequestMethod.GET)
+	public String seleniumGet() {
+		return "study/crawling/selenium";
+	}
+	
+	// 크롤링연습 처리(selenium) - CGV 상영작 크롤링
+	@ResponseBody
+	@RequestMapping(value = "/crawling/selenium", method = RequestMethod.POST)
+	public List<HashMap<String, Object>> seleniumPost(HttpServletRequest request) {
+		List<HashMap<String, Object>> vos = new ArrayList<HashMap<String,Object>>();
+		
+		try {
+			String realPath = request.getSession().getServletContext().getRealPath("/resources/crawling/");
+			System.setProperty("webdriver.chrome.driver", realPath+"chromedriver.exe");
+			
+			WebDriver driver = new ChromeDriver();
+			driver.get("http://www.cgv.co.kr/movies/");
+			
+			// 현재 상영작만 보기
+			WebElement btnMore = driver.findElement(By.id("chk_nowshow"));
+			btnMore.click();
+			
+			// 더보기 버튼 클릭
+			btnMore = driver.findElement(By.className("link-more"));
+			btnMore.click();
+			
+			// 화면이 더 열리는 동안 시간을 지연시켜준다. 열리기전에 더보기 버튼이 클릭되면 이후 내용이 로딩이 안 될 수 있음
+			try {	Thread.sleep(2000);	} catch (Exception e) {}
+			
+			// 낱개의 vos 객체(elements)를 HashMap에 등록 후 List객체로 처리해서 프론트로 넘겨준다.
+			List<WebElement> elements = driver.findElements(By.cssSelector("div.sect-movie-chart ol li"));
+			for(WebElement element : elements) {
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				String image = "<img src='"+element.findElement(By.tagName("img")).getAttribute("src")+"' width='200px'";
+				String link = element.findElement(By.tagName("a")).getAttribute("href");
+				String title = "<a href='"+link+"' target='_blank'>"+element.findElement(By.className("title")).getText()+"</a>";
+				String percent = element.findElement(By.className("percent")).getText();
+				map.put("image", image);
+				map.put("link", link);
+				map.put("title", title);
+				map.put("percent", percent);
+				vos.add(map);
+			}
+			driver.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("vos: "+vos);
+		return vos;
+	}
+	
+	// 크롤링연습 처리(selenium) - SRT 열차 시간표 크롤링
+	@ResponseBody
+	@RequestMapping(value = "/crawling/train", method = RequestMethod.POST)
+	public List<HashMap<String, Object>> trainPost(HttpServletRequest request, String stationStart, String stationStop) {
+		List<HashMap<String, Object>> array = new ArrayList<HashMap<String,Object>>();
+		try {
+			String realPath = request.getSession().getServletContext().getRealPath("/resources/crawling/");
+			System.setProperty("webdriver.chrome.driver", realPath+"chromedriver.exe");
+			
+			WebDriver driver = new ChromeDriver();
+			driver.get("http://srtplay.com/train/schedule");
+			
+			// 출발지 클릭 (우클릭 -> copy -> copy xpath 로 실제 아이디 가져오기)
+			WebElement btnMore = driver.findElement(By.xpath("//*[@id=\"station-start\"]/span"));
+			btnMore.click();
+      try { Thread.sleep(2000);} catch (InterruptedException e) {}
+      // 입력란에 출발지 입력
+      btnMore = driver.findElement(By.xpath("//*[@id=\"station-pos-input\"]"));
+      btnMore.sendKeys(stationStart); // sendKeys: 박스 안에 값 입력
+      btnMore = driver.findElement(By.xpath("//*[@id=\"stationListArea\"]/li/label/div/div[2]"));
+      btnMore.click();
+      btnMore = driver.findElement(By.xpath("//*[@id=\"stationDiv\"]/div/div[3]/div/button"));
+      btnMore.click();
+      try { Thread.sleep(2000);} catch (InterruptedException e) {}
+      
+      // 도착지 클릭
+      btnMore = driver.findElement(By.xpath("//*[@id=\"station-arrive\"]/span"));
+      btnMore.click();
+      try { Thread.sleep(2000);} catch (InterruptedException e) {}
+      btnMore = driver.findElement(By.id("station-pos-input"));
+      // 입력란에 도착지 입력
+      btnMore.sendKeys(stationStop);
+      btnMore = driver.findElement(By.xpath("//*[@id=\"stationListArea\"]/li/label/div/div[2]"));
+      btnMore.click();
+      btnMore = driver.findElement(By.xpath("//*[@id=\"stationDiv\"]/div/div[3]/div/button"));
+      btnMore.click();
+      try { Thread.sleep(2000);} catch (InterruptedException e) {}
+      
+      // 열차 조회버튼 클릭
+      btnMore = driver.findElement(By.xpath("//*[@id=\"sr-train-schedule-btn\"]/div/button"));
+      btnMore.click();
+      try { Thread.sleep(2000);} catch (InterruptedException e) {}
+      
+      // 화면에 나온 값을 가져가기
+      List<WebElement> timeElements = driver.findElements(By.cssSelector(".table-body ul.time-list li"));
+      HashMap<String, Object> map = null;
+      
+    	for(WebElement element : timeElements){
+				map = new HashMap<String, Object>();
+				String train=element.findElement(By.className("train")).getText();
+				String start=element.findElement(By.className("start")).getText();
+				String arrive=element.findElement(By.className("arrive")).getText();
+				String time=element.findElement(By.className("time")).getText();
+				String price=element.findElement(By.className("price")).getText();
+				map.put("train", train);
+				map.put("start", start);
+				map.put("arrive", arrive);
+				map.put("time", time);
+				map.put("price", price);
+				array.add(map);
+			}
+      
+    	// 요금조회하기 버튼을 클릭한다.(처리 안됨 - 스크린샷으로 대체)
+      btnMore = driver.findElement(By.xpath("//*[@id=\"scheduleDiv\"]/div[2]/div/ul/li[1]/div/div[5]/button"));
+      //System.out.println("요금 조회버튼클릭");
+      btnMore.click();
+      try { Thread.sleep(2000);} catch (InterruptedException e) {}
+    	
+      // 지정경로에 브라우저 화면 스크린샷 저장처리 (검색하여 나온 화면을 스크린샷하여 저장한다...)
+  		realPath = request.getSession().getServletContext().getRealPath("/resources/data/ckeditor/");
+      File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+      FileUtils.copyFile(scrFile, new File(realPath + "screenshot.png"));
+      
+      driver.close();
+      
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return array;
 	}
 	
 }
