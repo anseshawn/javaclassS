@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -287,6 +288,36 @@ public class StudyServiceImpl implements StudyService {
 			res = 1;
 		} catch (IOException e) {e.printStackTrace();}
 		return res;
+	}
+
+	// wordcloud
+	@Override
+	public Map<String, Integer> analyzer1(String content) {
+		int wordFrequenciesToReturn = 10;
+		int minWordLength = 2;
+		
+		Map<String, Integer> frequencyMap = new HashMap<String, Integer>(); // 구현객체로
+		
+		String[] words = content.split("\\s+"); // 정규식으로 띄어쓰기 표현 (+: 1개이상)
+		// String[] pps = {"은","는","이","가","을","를","와","과"};
+		for(String word : words) {
+			if(word.length() >= minWordLength) {
+				word = word.toLowerCase();
+				/*
+				System.out.println("변경전 : "+word);
+				for(int i=0; i<pps.length; i++) {
+					word.replace(pps[i], "");
+					System.out.println("변경후: " +word);
+				}
+				*/
+				frequencyMap.put(word,(frequencyMap.getOrDefault(word, 0) + 1));
+			}
+		}
+		
+		return frequencyMap.entrySet().stream()
+        .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+        .limit(wordFrequenciesToReturn)
+        .collect(HashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), HashMap::putAll);
 	}
 	
 	/*

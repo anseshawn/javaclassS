@@ -1,10 +1,23 @@
 package com.spring.javaclassS.controller;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -26,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +49,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.kennycason.kumo.CollisionMode;
+import com.kennycason.kumo.WordCloud;
+import com.kennycason.kumo.WordFrequency;
+import com.kennycason.kumo.bg.CircleBackground;
+import com.kennycason.kumo.font.KumoFont;
+import com.kennycason.kumo.font.scale.LinearFontScalar;
+import com.kennycason.kumo.nlp.FrequencyAnalyzer;
+import com.kennycason.kumo.nlp.tokenizer.WhiteSpaceWordTokenizer;
+import com.kennycason.kumo.palette.ColorPalette;
+import com.spring.javaclassS.common.ARIAUtil;
+import com.spring.javaclassS.common.SecurityUtil;
 import com.spring.javaclassS.service.DbtestService;
 import com.spring.javaclassS.service.StudyService;
 import com.spring.javaclassS.vo.CrawlingVO;
@@ -55,6 +80,8 @@ public class StudyController {
 	@Autowired
 	JavaMailSender mailSender;
 	
+	@Autowired
+	BCryptPasswordEncoder passwordEncoder;
 	
 	@RequestMapping(value = "/ajax/ajaxForm", method = RequestMethod.GET)
 	public String ajaxFormGet() {
@@ -696,4 +723,234 @@ public class StudyController {
 		return array;
 	}
 	
+	//크롤링연습 처리(selenium) - 네이버 게임 목록 조회하기
+	@ResponseBody
+	@RequestMapping(value = "/crawling/naverGameSearch", method = RequestMethod.POST)
+	public List<CrawlingVO> naverGameSearchPost(HttpServletRequest request, int page) {
+		List<CrawlingVO> vos = new ArrayList<CrawlingVO>();
+		try {
+			String realPath = request.getSession().getServletContext().getRealPath("/resources/crawling/");
+			System.setProperty("webdriver.chrome.driver", realPath + "chromedriver.exe");
+			
+			WebDriver driver = new ChromeDriver();
+			driver.get("https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=게임");
+			
+			WebElement btnMore = null;
+			
+			Connection conn = Jsoup.connect("https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=게임");
+			Document document = conn.get();
+			
+			Elements selects = null;
+			ArrayList<String> titleVos = new ArrayList<String>();
+			ArrayList<String> jangreVos = new ArrayList<String>();
+			ArrayList<String> platformVos = new ArrayList<String>();
+			ArrayList<String> chulsiilVos = new ArrayList<String>();
+			ArrayList<String> thumbnailVos = new ArrayList<String>();
+		
+			for(int i=0; i<page; i++) {
+				// 페이지마다 새로고침된 HTML을 가져와서 Jsoup으로 파싱
+				document = Jsoup.parse(driver.getPageSource());
+						
+				//selects =	document.select("a.title");
+				selects =	document.selectXpath("//*[@id=\"mflick\"]/div/div/div/div/strong/a");
+				for(Element select : selects) {
+					//titleVos.add(select.html());
+					//titleVos.add("<a href='"+select.tagName("a").attribute("href")+"' target='_blank'>"+select.text()+"</a>");
+					titleVos.add("<a href='https://search.naver.com/search.naver?"+select.tagName("a").attribute("href").toString().substring(select.tagName("a").attribute("href").toString().indexOf("?")+1)+"' target='_blank'>"+select.text()+"</a>");
+				}
+				//System.out.println();
+				
+				selects =	document.selectXpath("//*[@id=\"mflick\"]/div/div/div/div/dl/dd[1]");
+				for(Element select : selects) {
+					jangreVos.add(select.text());
+				}
+				selects =	document.selectXpath("//*[@id=\"mflick\"]/div/div/div/div/dl/dd[2]");
+				for(Element select : selects) {
+					platformVos.add(select.text());
+				}
+				
+				selects =	document.selectXpath("//*[@id=\"mflick\"]/div/div/div/div/dl/dd[3]");
+				for(Element select : selects) {
+					chulsiilVos.add(select.text());
+				}
+				
+				selects =	document.selectXpath("//*[@id=\"mflick\"]/div/div/div/div/div/a");
+				for(Element select : selects) {
+					thumbnailVos.add(select.html());
+				}
+				
+				btnMore = driver.findElement(By.xpath("//*[@id=\"main_pack\"]/section[5]/div[2]/div/div/div[4]/div/a[2]"));
+	      btnMore.click();
+	      try { Thread.sleep(2000);} catch (InterruptedException e) {}
+			}
+			driver.close();
+			for(int i=0; i<jangreVos.size(); i++) {
+				CrawlingVO vo = new CrawlingVO();
+				vo.setItem1(titleVos.get(i));
+				vo.setItem2(jangreVos.get(i));
+				vo.setItem3(platformVos.get(i));
+				vo.setItem4(chulsiilVos.get(i));
+				vo.setItem5(thumbnailVos.get(i));
+				vos.add(vo);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return vos;
+	}
+	
+	// 암호화 종류
+	@RequestMapping(value = "/password/password", method = RequestMethod.GET)
+	public String passwordGet() {
+		return "study/password/password";
+	}
+	// 암호화(SHA-256)
+	@ResponseBody
+	@RequestMapping(value = "/password/sha256", method = RequestMethod.POST, produces="application/text; charset=utf8")
+	public String sha256Post(String pwd) {
+		UUID uid = UUID.randomUUID();
+		String salt = uid.toString().substring(0,8);
+		
+		SecurityUtil security = new SecurityUtil();
+		String encPwd = security.encryptSHA256(salt + pwd);
+		
+		pwd = "salt키 : " + salt + " / 암호화된 비밀번호 : " + encPwd;
+		
+		return pwd;
+	}
+	
+	// aria
+	@ResponseBody
+	@RequestMapping(value = "/password/aria", method = RequestMethod.POST, produces="application/text; charset=utf8")
+	public String ariaPost(String pwd) throws InvalidKeyException, UnsupportedEncodingException {
+		UUID uid = UUID.randomUUID();
+		String salt = uid.toString().substring(0,8);
+		
+		String encPwd = "";
+		String decPwd = "";
+		
+		encPwd = ARIAUtil.ariaEncrypt(salt + pwd);
+		decPwd = ARIAUtil.ariaDecrypt(encPwd);
+		
+		pwd = "salt키 : " + salt + " / 암호화된 비밀번호 : " + encPwd + " / 복호화된 비밀번호 : " + decPwd.substring(8);
+		
+		return pwd;
+	}
+	
+	// BCrypt
+	@ResponseBody
+	@RequestMapping(value = "/password/bCryptPassword", method = RequestMethod.POST, produces="application/text; charset=utf8")
+	public String bCryptPasswordPost(String pwd) {
+		String encPwd = "";
+		encPwd = passwordEncoder.encode(pwd);
+		
+		pwd = "암호화된 비밀번호 : " + encPwd;
+		
+		return pwd;
+	}
+	
+	// worldcloud
+	@RequestMapping(value = "/wordcloud/wordcloudForm", method = RequestMethod.GET)
+	public String wordcloudFormGet() {
+		return "study/wordcloud/wordcloudForm";
+	}
+	
+	// wordcloud 연습처리1
+	@ResponseBody
+	@RequestMapping(value = "/wordcloud/analyzer1", method = RequestMethod.POST)
+	public Map<String, Integer> analyzer1Post(String content) {
+		return studyService.analyzer1(content);
+	}
+	
+	// wordcloud 연습처리2
+	@ResponseBody
+	@RequestMapping(value = "/wordcloud/analyzer2", method = RequestMethod.POST)
+	public Map<String, Integer> analyzer2Post(HttpServletRequest request) {
+		String realPath = request.getSession().getServletContext().getRealPath("/resources/data/study/sample.txt");
+		String content = "";
+		
+		try (BufferedReader br = new BufferedReader(new FileReader(realPath))) { // try-catch 안에서 외부내용 가져와서 처리 가능
+			String line;
+			while((line = br.readLine()) != null) {
+				System.out.println(line);
+				content += line + " ";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return studyService.analyzer1(content);
+	}
+	
+	// wordcloud 연습처리3
+	@ResponseBody
+	@RequestMapping(value = "/wordcloud/analyzer3", method = RequestMethod.POST)
+	public Map<String, Integer> analyzer3Post(HttpServletRequest request,
+			String url,
+			String selector,
+			String excludeWord
+			) throws IOException {
+		Connection conn = Jsoup.connect(url);
+		Document document = conn.get();
+		Elements selectors = document.select(selector);
+		
+		int i=0;
+		String str = "";
+		for(Element select : selectors) {
+			i++;
+			System.out.println(i+" : "+select.html());
+			str += select.html()+"\n";
+		}
+		
+		// 제외할 문자 처리하기
+		if(!excludeWord.equals("") || excludeWord != null ) {
+			String[] tempStrs = excludeWord.split("/");			// [특종]/[단독]
+			for(int k=0; k<tempStrs.length; k++) {
+				str = str.replace(tempStrs[k], "");
+			}
+		}
+		
+		// 파일로 저장하기
+		String realPath = request.getSession().getServletContext().getRealPath("/resources/data/study/sample2.txt");
+		
+		try (FileWriter writer =new FileWriter(realPath)) { // try-catch 안에서 외부내용 가져와서 처리 가능
+			writer.write(str);
+			System.out.println("파일 생성 OK");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return studyService.analyzer1(str);
+	}
+	
+	// 워드클라우드 생성하여 이미지로 보관하기
+	@RequestMapping(value = "/wordcloud/wordcloudShow", method = RequestMethod.GET)
+	public String wordcloudShowGet(HttpServletRequest request, Model model) throws IOException, FontFormatException {
+		FrequencyAnalyzer frequencyAnalyzer = new FrequencyAnalyzer();
+		frequencyAnalyzer.setWordFrequenciesToReturn(300);
+		frequencyAnalyzer.setMinWordLength(2);
+		frequencyAnalyzer.setWordTokenizer(new WhiteSpaceWordTokenizer());
+		
+		List<WordFrequency> wordFrequencys = frequencyAnalyzer.load(getInputStream(request.getSession().getServletContext().getRealPath("/resources/data/study/sample2.txt")));
+		
+		Dimension dimension = new Dimension(500,500); // 워드클라우드 크기(픽셀)
+		WordCloud wordCloud = new WordCloud(dimension, CollisionMode.PIXEL_PERFECT); // 단어사이의 충돌을 감지해서 최대한 조밀하게 처리할 것
+		wordCloud.setPadding(2); // 단어 사이의 여백
+		wordCloud.setBackground(new CircleBackground(250)); // 워드클라우드의 배경모양 결정(반지름250인 원형)
+		wordCloud.setColorPalette(new ColorPalette(new Color(0x4055F1),new Color(0x408DF1),new Color(0x40AAF1),new Color(0x40C5F1),new Color(0x40D3F1),new Color(0xCCCCCC),new Color(0xD1D1D1),new Color(0xE1E2E3))); // 색상 영어 안됨(16진수 숫자로 표현) 색깔은 객체라 하나하나 만들어줘야함
+		wordCloud.setFontScalar(new LinearFontScalar(10, 60)); // (최소크기, 최대크기)
+		
+		// 한글 폰트 설정
+		Font font = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getClassLoader().getResourceAsStream("fonts/NanumGothic-Bold.ttf"));
+		wordCloud.setKumoFont(new KumoFont(font));
+		
+		wordCloud.build(wordFrequencys);
+		wordCloud.writeToFile(request.getSession().getServletContext().getRealPath("/resources/data/study/wordcloud.png"));
+		
+		model.addAttribute("imagePath","wordcloud.png");
+		
+		return "study/wordcloud/wordcloudShow";
+	}
+	
+	private InputStream getInputStream(String path) throws IOException {
+		return new FileInputStream(new File(path));
+	}
 }
