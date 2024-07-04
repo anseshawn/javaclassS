@@ -27,6 +27,12 @@
 		from crime where year=#{year} and police like concat(#{police},'%') group by police;
 	</select>
 	
+	<select id="getKakaoAddressSearch" resultType="com.spring.javaclassS.vo.KakaoAddressVO">
+		select * from kakaoAddress where address = #{address};
+	</select>
+	<select id="getKakaoAddressList" resultType="com.spring.javaclassS.vo.KakaoAddressVO">
+		select * from kakaoAddress order by address;
+	</select>
 	
 	<!-- 과제 -->
 	<!-- 
@@ -50,8 +56,16 @@
 		insert into crime values (default,#{vo.year},#{vo.police},#{vo.robbery},#{vo.theft},#{vo.murder},#{vo.violence});
 	</insert>
 	
+	<insert id="setKakaoAddressInput">
+		insert into kakaoAddress values (#{vo.address}, #{vo.latitude}, #{vo.longitude});
+	</insert>
 	
 	<delete id="setDeleteCrimeData">
 		delete from crime where year = #{year};
 	</delete>
+	
+	<delete id="setKakaoAddressDelete">
+		delete from kakaoAddress where address = #{address};
+	</delete>
+	
 </mapper>
