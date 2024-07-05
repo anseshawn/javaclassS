@@ -50,6 +50,10 @@ public interface StudyService {
 	public List<KakaoAddressVO> getKakaoAddressList();
 
 	public int setKakaoAddressDelete(String address);
+	
+	public String fileCsvToMysql(MultipartFile fName);
+
+	public int setCsvTableDelete(String csvTable);
 
 //	public ArrayList<CrimeVO> getYearPoliceCheck(int year, String police, String yearOrder);
 //

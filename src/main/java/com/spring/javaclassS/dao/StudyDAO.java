@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.spring.javaclassS.vo.CrimeVO;
 import com.spring.javaclassS.vo.KakaoAddressVO;
+import com.spring.javaclassS.vo.PetCafeVO;
 import com.spring.javaclassS.vo.UserVO;
 
 public interface StudyDAO {
@@ -34,6 +35,10 @@ public interface StudyDAO {
 	public List<KakaoAddressVO> getKakaoAddressList();
 
 	public int setKakaoAddressDelete(@Param("address") String address);
+	
+	public void setPetCafe(@Param("vo") PetCafeVO vo);
+
+	public int setCsvTableDelete(@Param("csvTable") String csvTable);
 	
 //	public ArrayList<CrimeVO> getListCrimeDate(@Param("year") int year);
 //

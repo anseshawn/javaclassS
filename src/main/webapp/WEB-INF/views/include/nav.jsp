@@ -70,12 +70,13 @@
 	      <div class="w3-dropdown-content w3-bar-block w3-card-4">
 	        <a href="${ctp}/study/random/randomForm" class="w3-bar-item w3-button">랜덤알파뉴메릭</a>
 	        <a href="${ctp}/study/kakao/kakaomap" class="w3-bar-item w3-button">카카오맵</a>
-	        <a href="${ctp}/" class="w3-bar-item w3-button">날씨API</a>
-	        <a href="${ctp}/" class="w3-bar-item w3-button">캡처연습</a>
+	        <a href="${ctp}/study/weather/weatherForm" class="w3-bar-item w3-button">날씨API</a>
+	        <a href="${ctp}/study/captcha/captchaForm" class="w3-bar-item w3-button">캡챠연습</a>
 	        <a href="${ctp}/" class="w3-bar-item w3-button">QR Code</a>
 	        <a href="${ctp}/" class="w3-bar-item w3-button">웹 차트</a>
 	        <a href="${ctp}/" class="w3-bar-item w3-button">트랜잭션</a>
 	        <a href="#" class="w3-bar-item w3-button">스케줄러</a>
+	        <a href="${ctp}/study/csv/csvForm" class="w3-bar-item w3-button">CSV를MySQL로</a>
 	      </div>
 	    </div>
 	    <div class="w3-dropdown-hover w3-hide-small">

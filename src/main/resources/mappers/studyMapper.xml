@@ -34,6 +34,7 @@
 		select * from kakaoAddress order by address;
 	</select>
 	
+	
 	<!-- 과제 -->
 	<!-- 
 	<select id="getListCrimeDate" resultType="com.spring.javaclassS.vo.CrimeVO">
@@ -60,12 +61,20 @@
 		insert into kakaoAddress values (#{vo.address}, #{vo.latitude}, #{vo.longitude});
 	</insert>
 	
+	<insert id="setPetCafe">
+	  insert into petCafe values (default,#{vo.placeName},#{vo.category},#{vo.sido},#{vo.sigungu},#{vo.dong},#{vo.latitude},#{vo.longitude},#{vo.zipNum},#{vo.rdnmAddress},#{vo.lnmAddress},#{vo.homePage},#{vo.closedDay},#{vo.openTime},#{vo.parking},#{vo.playPrice},#{vo.petOK},#{vo.petSize},#{vo.petLimit},#{vo.inPlaceOK},#{vo.outPlaceOK},#{vo.placeInfo},#{vo.petExtraFee});
+	</insert>
+	
 	<delete id="setDeleteCrimeData">
 		delete from crime where year = #{year};
 	</delete>
 	
 	<delete id="setKakaoAddressDelete">
 		delete from kakaoAddress where address = #{address};
+	</delete>
+	
+	<delete id="setCsvTableDelete">
+	  delete from ${csvTable};
 	</delete>
 	
 </mapper>
