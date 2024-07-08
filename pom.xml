@@ -262,6 +262,13 @@
 		    <version>3.12.0</version>
 		</dependency>
 		
+		<!-- QR Code 생성을 위한 구글 라이브러리(zxing) -->
+		<!-- https://mvnrepository.com/artifact/com.google.zxing/javase -->
+		<dependency>
+		    <groupId>com.google.zxing</groupId>
+		    <artifactId>javase</artifactId>
+		    <version>3.4.1</version>
+		</dependency>
 		
 		  
 	</dependencies>

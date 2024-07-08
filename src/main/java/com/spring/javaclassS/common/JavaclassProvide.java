@@ -3,12 +3,15 @@ package com.spring.javaclassS.common;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -93,5 +96,13 @@ public class JavaclassProvide {
 		mailSender.send(message);
 		
 		return "1";
+	}
+	
+	public String newNameCreate(int len) {
+		Date today = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+		String newName = sdf.format(today);
+		newName += RandomStringUtils.randomAlphanumeric(len) + "_";
+		return newName;
 	}
 }
