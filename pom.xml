@@ -270,6 +270,14 @@
 		    <version>3.4.1</version>
 		</dependency>
 		
+		<!-- 썸네일 이미지를 위한 라이브러리(thumbnailator) -->
+		<!-- https://mvnrepository.com/artifact/net.coobird/thumbnailator -->
+		<dependency>
+		    <groupId>net.coobird</groupId>
+		    <artifactId>thumbnailator</artifactId>
+		    <version>0.4.20</version>
+		</dependency>
+		
 		  
 	</dependencies>
     <build>

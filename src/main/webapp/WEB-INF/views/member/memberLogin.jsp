@@ -25,6 +25,7 @@
   <title>memberLogin.jsp</title>
   <%@ include file = "/WEB-INF/views/include/bs4.jsp" %>
   <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+  <script type="text/javascript" src="https://static.nid.naver.com/js/naverLogin_implicit-1.0.3.js" charset="utf-8"></script>
   <style>
 		#spinner {
 		  position: absolute;
@@ -137,6 +138,24 @@
   			}
   		});
   	}
+  	
+    // QR 로그인
+    function qrLogin() {
+    	let mid = myform.mid.value;
+    	if(mid == "") {
+    		alert("아이디를 입력하세요\n아이디 분실시는 QR로그인할수 없습니다.");
+    		return false;
+    	}
+    	let url = "${ctp}/member/qrLogin?mid="+mid;
+      let windowName = "childWindow";
+      let windowWidth = 250;
+      let windowHeight = 400;
+      let x = (window.screen.width / 2) - (windowWidth / 2);
+      let y = (window.screen.height / 2) - (windowHeight / 2);
+      let opt = "width="+windowWidth+"px, height="+windowHeight+"px, left="+x+", top="+y;
+
+      newWin = window.open(url, windowName, opt);
+    }
   </script>
 </head>
 <body>
@@ -164,6 +183,8 @@
           <input type="reset" value="다시입력" class="btn btn-warning mr-2"/>
           <input type="button" value="회원가입" onclick="location.href='${ctp}/member/memberJoin';" class="btn btn-primary mr-4"/>
           <a href="javascript:kakaoLogin()"><img src="${ctp}/images/kakao_login_medium_narrow.png" class="kakao" width="150px"/></a>
+          <input type="button" value="QR 로그인" onclick="qrLogin()" class="btn btn-outline-primary mr-4"/>
+          <span id="naver_id_login"></span>
         </td>
       </tr>
     </table>
@@ -226,6 +247,16 @@
   </div>
 </div>
 <p><br/></p>
+<!-- 네이버 로그인 버튼 노출 영역 -->
+<script type="text/javascript">
+	var naver_id_login = new naver_id_login("", "http://localhost:9090/javaclassS/member/memberNaverLoginNew"); // APIKey
+	var state = naver_id_login.getUniqState();
+	naver_id_login.setButton("white", 2,40);
+	naver_id_login.setDomain("http://localhost:9090/javaclassS/member/memberNaverLoginNew");
+	naver_id_login.setState(state);
+	naver_id_login.setPopup();
+	naver_id_login.init_naver_id_login();
+</script>
 <jsp:include page="/WEB-INF/views/include/footer.jsp" />
 </body>
 </html>

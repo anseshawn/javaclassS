@@ -36,6 +36,8 @@ import com.spring.javaclassS.vo.PetCafeVO;
 import com.spring.javaclassS.vo.QrCodeVO;
 import com.spring.javaclassS.vo.UserVO;
 
+import net.coobird.thumbnailator.Thumbnailator;
+
 @Service
 public class StudyServiceImpl implements StudyService {
 	
@@ -595,6 +597,34 @@ public class StudyServiceImpl implements StudyService {
 	@Override
 	public QrCodeVO getQrCodeSearch(String qrCode) {
 		return studyDAO.getQrCodeSearch(qrCode);
+	}
+
+	@Override
+	public String setThumbnailCreate(MultipartFile file) {
+		String res = "";
+		
+		try {
+			String sFileName = javaclassProvide.newNameCreate(2)+"_"+file.getOriginalFilename();
+			
+			// 썸네일 파일이 저장될 경로 설정
+			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+			String realPath = request.getSession().getServletContext().getRealPath("/resources/data/thumbnail/");
+			File realFileName = new File(realPath+sFileName);
+			file.transferTo(realFileName); // 내가 지정한 경로+파일명으로 원본파일 저장
+			
+			// 썸네일 이미지 생성 저장하기
+			String thumbnailSaveName = realPath + "s_" + sFileName;
+			File thumbnailFile = new File(thumbnailSaveName);
+			
+			int width=160;
+			int height=120;
+			Thumbnailator.createThumbnail(realFileName, thumbnailFile, width, height);
+					
+			res = sFileName;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return res;
 	}
 	
 	/*

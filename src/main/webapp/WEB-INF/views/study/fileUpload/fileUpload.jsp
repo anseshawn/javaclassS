@@ -98,7 +98,7 @@
 		</p>
 	</form>
 	<hr/>
-	<div id="downloadFile">
+	<div>
 		<h3>서버에 저장된 파일 정보(총 ${fileCount}건)</h3>
 		<div class="row mb-2">
 			<div class="col-md-9">저장경로 : ${ctp}resources/data/fileUpload/*.*</div>

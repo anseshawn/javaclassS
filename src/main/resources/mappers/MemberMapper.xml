@@ -29,6 +29,10 @@
 		select * from member2 where nickName=#{nickName} and email=#{email} limit 1;
 	</select>
 	
+	<select id="getQrCodeLoginCheck" resultType="String">
+		select publishDate from qrCode where mid = #{mid} and name = #{qrCodeToken} order by idx desc limit 1;
+	</select>
+	
 	
 	<insert id="setMemberJoinOk">
 		insert into member2 values(default, #{vo.mid}, #{vo.pwd}, #{vo.nickName}, #{vo.name}, #{vo.gender},
@@ -38,6 +42,10 @@
 	
 	<insert id="setKakaoMemberInput">
 		insert into member2 (mid, pwd, nickName, name, email, level) values(#{mid}, #{pwd}, #{nickName}, #{nickName}, #{email}, 2);
+	</insert>
+	
+	<insert id="setQrCodeLogin">
+	  insert into qrCode values (default,#{mid},#{qrCodeToken},"","","","",0,0,#{today},"");
 	</insert>
 	
 	

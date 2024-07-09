@@ -24,6 +24,11 @@
 			<exclude-mapping path="/member/memberLogout"/>
 			<exclude-mapping path="/member/kakaoLogin"/>
 			<exclude-mapping path="/member/kakaoLogout"/>
+			<exclude-mapping path="/member/naverLogout"/>
+			<exclude-mapping path="/member/memberLoginNew"/>
+			<exclude-mapping path="/member/qrLogin"/>
+			<exclude-mapping path="/member/qrLoginConfirm/**"/>
+			<exclude-mapping path="/member/qrLoginCheck/**"/>
 			<beans:ref bean="level3Interceptor"/>
 		</interceptor>
 	

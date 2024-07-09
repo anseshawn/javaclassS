@@ -68,6 +68,8 @@ public interface StudyService {
 
 	public QrCodeVO getQrCodeSearch(String qrCode);
 
+	public String setThumbnailCreate(MultipartFile file);
+
 //	public ArrayList<CrimeVO> getYearPoliceCheck(int year, String police, String yearOrder);
 //
 //	public CrimeVO getAnalyzeTotal(int year, String police);
