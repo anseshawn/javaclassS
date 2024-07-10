@@ -70,6 +70,7 @@ import com.spring.javaclassS.common.ARIAUtil;
 import com.spring.javaclassS.common.SecurityUtil;
 import com.spring.javaclassS.service.DbtestService;
 import com.spring.javaclassS.service.StudyService;
+import com.spring.javaclassS.vo.ChartVO;
 import com.spring.javaclassS.vo.CrawlingVO;
 import com.spring.javaclassS.vo.CrimeVO;
 import com.spring.javaclassS.vo.KakaoAddressVO;
@@ -1241,6 +1242,68 @@ public class StudyController {
 		model.addAttribute("fileCount", (files.length/2));
 		
 		return "study/thumbnail/thumbnailResult";
+	}
+	
+	// 차트 페이지 폼 보기
+	@RequestMapping(value = "/chart/chartForm", method = RequestMethod.GET)
+	public String chartFormGet(Model model,
+			@RequestParam(name = "part", defaultValue = "barV", required = false) String part
+			) {
+		model.addAttribute("part", part);
+		return "study/chart/chartForm";
+	}
+	// 차트 페이지2 폼 보기
+	@RequestMapping(value = "/chart2/chart2Form", method = RequestMethod.GET)
+	public String chart2FormGet(Model model,
+			@RequestParam(name = "part", defaultValue = "barV", required = false) String part
+			) {
+		model.addAttribute("part", part);
+		return "study/chart2/chart2Form";
+	}
+	// 차트 페이지2 폼 보기
+	@RequestMapping(value = "/chart2/googleChart2", method = RequestMethod.POST)
+	public String googleChart2Post(Model model, ChartVO vo) {
+		model.addAttribute("vo", vo);
+		return "study/chart2/chart2Form";
+	}
+	
+	// 최근 방문자수 선형 차트로 표시하기
+	@RequestMapping(value = "/chart2/googleChart2Recently", method = RequestMethod.GET)
+	public String googleChart2RecentlyGet(Model model, ChartVO vo) {
+		List<ChartVO> vos = null;
+		if(vo.getPart().equals("lineChartVisitCount")) {
+			vos = studyService.getRecentlyVisitCount(1);
+			// vos자료가 차트에 표시처리가 잘 되지 않을 경우에는 각각의 자료를 다시 편집해서 차트로 보내줘야 한다.\
+			String[] visitDates = new String[7];
+			int[] visitCounts = new int[7];
+			for(int i=0; i<7; i++) {
+				visitDates[i] = vos.get(i).getVisitDate();
+				visitCounts[i] = vos.get(i).getVisitCount();
+			}
+			model.addAttribute("xTitle", "방문날짜");
+			model.addAttribute("legend", "하루 총 방문자수");
+			model.addAttribute("visitDates", visitDates);
+			model.addAttribute("visitCounts", visitCounts);
+			model.addAttribute("title", "최근 7일간 방문횟수");
+			model.addAttribute("subTitle", "(최근 7일간 방문한 해당 일자의 방문자 수를 표시합니다.)");
+		}
+		else if(vo.getPart().equals("barChartVisitCount")) {
+			vos = studyService.getRecentlyVisitCount(2);
+			String[] mids = new String[7];
+			int[] visitCounts = new int[7];
+			for(int i=0; i<7; i++) {
+				mids[i] = vos.get(i).getVisitDate();
+				visitCounts[i] = vos.get(i).getVisitCount();
+			}
+			model.addAttribute("title", "회원 별 방문 수");
+			model.addAttribute("subTitle", "(아이디 별 총 방문수를 구한다.)");
+			model.addAttribute("xTitle", "단위: 회");
+			model.addAttribute("legend", "아이디");
+			model.addAttribute("mids", mids);
+			model.addAttribute("visitCounts", visitCounts);
+		}
+		model.addAttribute("vo", vo);
+		return "study/chart2/chart2Form";
 	}
 	
 }

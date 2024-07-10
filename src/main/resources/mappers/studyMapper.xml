@@ -38,6 +38,15 @@
 		select * from qrCode where qrCodeName = #{qrCodeName};
 	</select>
 	
+	<select id="getRecentlyVisitCount" resultType="com.spring.javaclassS.vo.ChartVO">
+		<if test="i==1">
+			select substring(visitDate, 1, 10) as visitDate, visitCount from visit order by visitDate desc limit 7;
+		</if>
+		<if test="i==2">
+			select mid as visitDate, visitCnt as visitCount from member2 order by visitCnt desc limit 7;
+		</if>
+	</select>
+	
 	<!-- 과제 -->
 	<!-- 
 	<select id="getListCrimeDate" resultType="com.spring.javaclassS.vo.CrimeVO">

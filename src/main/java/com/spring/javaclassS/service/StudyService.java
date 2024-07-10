@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.spring.javaclassS.vo.ChartVO;
 import com.spring.javaclassS.vo.CrimeVO;
 import com.spring.javaclassS.vo.KakaoAddressVO;
 import com.spring.javaclassS.vo.QrCodeVO;
@@ -69,6 +70,8 @@ public interface StudyService {
 	public QrCodeVO getQrCodeSearch(String qrCode);
 
 	public String setThumbnailCreate(MultipartFile file);
+
+	public List<ChartVO> getRecentlyVisitCount(int i);
 
 //	public ArrayList<CrimeVO> getYearPoliceCheck(int year, String police, String yearOrder);
 //
