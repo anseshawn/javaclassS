@@ -47,6 +47,13 @@
 		</if>
 	</select>
 	
+	<select id="getTransactionList" resultType="com.spring.javaclassS.vo.TransactionVO">
+		select * from user order by idx desc;
+	</select>
+	<select id="getTransactionList2" resultType="com.spring.javaclassS.vo.TransactionVO">
+		select * from user2 order by mid asc;
+	</select>
+	
 	<!-- 과제 -->
 	<!-- 
 	<select id="getListCrimeDate" resultType="com.spring.javaclassS.vo.CrimeVO">
@@ -80,6 +87,20 @@
 	<insert id="setQrCodeCreate">
 		insert into qrCode values (default, #{vo.mid}, #{vo.name}, #{vo.email}, #{vo.movieName}, #{vo.movieDate},
 			#{vo.movieTime}, #{vo.movieAdult}, #{vo.movieChild}, #{vo.publishDate}, #{vo.qrCodeName});
+	</insert>
+	
+	<insert id="setTransactionUserInput">
+		insert into user values(default, #{vo.mid},#{vo.name},#{vo.age},#{vo.address});
+	</insert>
+	<insert id="setTransactionUser1Input">
+		insert into user values(default, #{vo.mid},#{vo.name},#{vo.age},#{vo.address});
+	</insert>
+	<insert id="setTransactionUser2Input">
+		insert into user2 values(#{vo.mid},#{vo.job});
+	</insert>
+	<insert id="setTransactionUserTotalInput">
+		insert into user values(default, #{vo.mid},#{vo.name},#{vo.age},#{vo.address});
+		insert into user2 values(#{vo.mid},#{vo.job});
 	</insert>
 	
 	

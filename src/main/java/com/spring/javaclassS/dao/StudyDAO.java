@@ -10,6 +10,7 @@ import com.spring.javaclassS.vo.CrimeVO;
 import com.spring.javaclassS.vo.KakaoAddressVO;
 import com.spring.javaclassS.vo.PetCafeVO;
 import com.spring.javaclassS.vo.QrCodeVO;
+import com.spring.javaclassS.vo.TransactionVO;
 import com.spring.javaclassS.vo.UserVO;
 
 public interface StudyDAO {
@@ -47,6 +48,18 @@ public interface StudyDAO {
 	public QrCodeVO getQrCodeSearch(@Param("qrCodeName") String qrCode);
 
 	public List<ChartVO> getRecentlyVisitCount(@Param("i") int i);
+
+	public ArrayList<TransactionVO> getTransactionList();
+
+	public int setTransactionUserInput(@Param("vo") TransactionVO vo);
+
+	public ArrayList<TransactionVO> getTransactionList2();
+
+	public void setTransactionUser1Input(@Param("vo") TransactionVO vo);
+
+	public void setTransactionUser2Input(@Param("vo") TransactionVO vo);
+
+	public void setTransactionUserTotalInput(@Param("vo") TransactionVO vo);
 	
 //	public ArrayList<CrimeVO> getListCrimeDate(@Param("year") int year);
 //

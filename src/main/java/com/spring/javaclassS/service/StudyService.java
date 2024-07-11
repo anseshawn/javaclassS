@@ -12,6 +12,7 @@ import com.spring.javaclassS.vo.ChartVO;
 import com.spring.javaclassS.vo.CrimeVO;
 import com.spring.javaclassS.vo.KakaoAddressVO;
 import com.spring.javaclassS.vo.QrCodeVO;
+import com.spring.javaclassS.vo.TransactionVO;
 import com.spring.javaclassS.vo.UserVO;
 
 public interface StudyService {
@@ -72,6 +73,18 @@ public interface StudyService {
 	public String setThumbnailCreate(MultipartFile file);
 
 	public List<ChartVO> getRecentlyVisitCount(int i);
+
+	public ArrayList<TransactionVO> getTransactionList();
+
+	public int setTransactionUserInput(TransactionVO vo);
+
+	public ArrayList<TransactionVO> getTransactionList2();
+
+	public void setTransactionUser1Input(TransactionVO vo);
+
+	public void setTransactionUser2Input(TransactionVO vo);
+
+	public void setTransactionUserTotalInput(TransactionVO vo);
 
 //	public ArrayList<CrimeVO> getYearPoliceCheck(int year, String police, String yearOrder);
 //

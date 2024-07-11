@@ -48,7 +48,10 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -76,6 +79,7 @@ import com.spring.javaclassS.vo.CrimeVO;
 import com.spring.javaclassS.vo.KakaoAddressVO;
 import com.spring.javaclassS.vo.MailVO;
 import com.spring.javaclassS.vo.QrCodeVO;
+import com.spring.javaclassS.vo.TransactionVO;
 import com.spring.javaclassS.vo.UserVO;
 
 @Controller
@@ -1305,5 +1309,57 @@ public class StudyController {
 		model.addAttribute("vo", vo);
 		return "study/chart2/chart2Form";
 	}
+	
+	// validatorForm
+	@RequestMapping(value = "/validator/validatorForm", method = RequestMethod.GET)
+	public String validatorFormGet(Model model) {
+		ArrayList<TransactionVO> vos = studyService.getTransactionList();
+		model.addAttribute("vos",vos);
+		return "study/validator/validatorForm";
+	}
+	// validatorForm
+	@RequestMapping(value = "/validator/validatorForm", method = RequestMethod.POST)
+	public String validatorFormPost(@Validated TransactionVO vo, BindingResult bindingResult) { //bindingResult: 체크한 데이터를 넘겨받기
+		System.out.println("validator 진행중... : "+bindingResult);
+		
+		if(bindingResult.hasFieldErrors()) { // 참: 에러발생
+			System.out.println("에러 발생 : "+bindingResult);
+			return "redirect:/message/backendCheckNo";
+		}
+		
+		int res = studyService.setTransactionUserInput(vo);
+		if(res != 0) return "redirect:/message/transactionUserInputOk?tempFlag=validator";
+		else return "redirect:/message/transactionUserInputNo";
+	}
+	
+	// transactionForm
+	@RequestMapping(value = "/transaction/transactionForm", method = RequestMethod.GET)
+	public String transactionFormGet(Model model) {
+		ArrayList<TransactionVO> vos = studyService.getTransactionList();
+		ArrayList<TransactionVO> vos2 = studyService.getTransactionList2();
+		model.addAttribute("vos",vos);
+		model.addAttribute("vos2",vos2);
+		return "study/transaction/transactionForm";
+	}
+	// transactionForm
+	@Transactional
+	@RequestMapping(value = "/transaction/transactionForm", method = RequestMethod.POST)
+	public String transactionFormPost(TransactionVO vo) {
+		studyService.setTransactionUser1Input(vo);
+		studyService.setTransactionUser2Input(vo);
+		return "redirect:/message/transactionUserInputOk?tempFlag=transaction";
+	}
+	
+	// 한번에 두개 저장
+	@ResponseBody
+	@RequestMapping(value = "/transaction/transaction2", method = RequestMethod.POST)
+	public String transaction2Post(@Validated TransactionVO vo, BindingResult bindingResult) {
+		if(bindingResult.hasFieldErrors()) {
+			return "redirect:/message/transactionUserInputNo";
+		}
+		studyService.setTransactionUserTotalInput(vo);
+		return "1";
+	}
+	
 	
 }
