@@ -66,7 +66,7 @@ public class JavaclassProvide {
 		return fileName;
 	}
 	
-	// 임시 비밀번호 메일 전송하기
+	// 임시 비밀번호 메일 전송하기(스케줄러를 통한 메일 전송)
 	public String mailSend(String email, String title, String pwd) throws MessagingException {
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 		String content = "";
@@ -82,7 +82,8 @@ public class JavaclassProvide {
 		
 		// 메세지 보관함의 내용(content)에 , 발신자의 필요한 정보를 추가로 담아서 전송처리한다.
 		content = content.replace("\n", "<br>");
-		content += "<br><hr><h3> 임시비밀번호 : "+pwd+"</h3><hr><br>";
+		//content += "<br><hr><h3> 임시비밀번호 : "+pwd+"</h3><hr><br>";
+		content += "<br><hr><h3>"+pwd+"</h3><hr><br>";
 		content += "<p><img src=\"cid:main.jpg\" width='500px'></p>";
 		content += "<p>방문하기 : <a href='http://49.142.157.251:9090/cjgreen'>javaclass</a></p>";
 		content += "<hr>";

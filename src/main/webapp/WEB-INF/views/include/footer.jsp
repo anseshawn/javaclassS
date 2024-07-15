@@ -11,4 +11,5 @@
   <i class="fa fa-twitter w3-hover-opacity"></i>
   <i class="fa fa-linkedin w3-hover-opacity"></i>
   <p class="w3-medium">Powered by <a href="${ctp}/" target="_blank">Soeun An</a></p>
+  <p class="text-center"><%=request.getSession().getServletContext().getRealPath("/") %></p>
 </footer>
