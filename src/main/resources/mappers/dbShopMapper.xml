@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.spring.javaclassS.dao.DbShopDAO">
-<select id="getCategoryMainOne" resultType="com.spring.javaclassS.vo.DbProductVO">
+
+  <select id="getCategoryMainOne" resultType="com.spring.javaclassS.vo.DbProductVO">
     select * from categoryMain where categoryMainCode=#{categoryMainCode} || categoryMainName=#{categoryMainName};
   </select>
   
@@ -30,6 +31,10 @@
   <select id="getCategoryMiddleName" resultType="com.spring.javaclassS.vo.DbProductVO">
     select * from categoryMiddle where categoryMainCode = #{categoryMainCode};
   </select>
+  
+  <select id="getProductMaxIdx" resultType="com.spring.javaclassS.vo.DbProductVO">
+    select * from dbProduct order by idx desc limit 1;
+  </select>
 	
   <select id="getCategorySub" resultType="com.spring.javaclassS.vo.DbProductVO">
     select sub.*, main.categoryMainCode, main.categoryMainName, middle.categoryMiddleCode, middle.categoryMiddleName from categorySub sub, categoryMiddle middle, categoryMain main
@@ -37,10 +42,30 @@
     order by categorySubCode desc;
   </select>
   
+  <select id="getCategorySubName" resultType="com.spring.javaclassS.vo.DbProductVO">
+    select * from categorySub where categoryMainCode = #{categoryMainCode} and categoryMiddleCode = #{categoryMiddleCode}; 
+  </select>
+  
   <select id="getCategoryProductName" resultType="com.spring.javaclassS.vo.DbProductVO">
     select * from dbProduct 
     where categoryMainCode = #{vo.categoryMainCode} and categoryMiddleCode = #{vo.categoryMiddleCode} and categorySubCode = #{vo.categorySubCode}; 
   </select>
+  
+  <select id="getSubTitle" resultType="com.spring.javaclassS.vo.DbProductVO">
+  	select categorySubName from categorySub group by categorySubName order by categorySubName;
+  </select>
+  
+	<select id="getDbShopList" resultType="com.spring.javaclassS.vo.DbProductVO">
+	  <if test='part == "전체"'>
+	    select * from dbProduct <if test='mainPrice != 0'>where <![CDATA[mainPrice < #{mainPrice}]]></if> order by idx desc;
+	 	</if>
+	  <if test='part != "전체"'>     <!-- A01003 -->
+	 		select product.*, sub.categorySubName from dbProduct product, categorySub sub 
+	 		  where sub.categorySubName = #{part} and substring(product.productCode,4,3)=sub.categorySubCode <if test='mainPrice != 0'>and <![CDATA[mainPrice < #{mainPrice}]]></if> order by idx desc;
+	 	</if>
+	</select>
+  
+  
 	
 	
   <insert id="setCategoryMainInput">
@@ -53,6 +78,10 @@
   
   <insert id="setCategorySubInput">
     insert into categorySub values (#{vo.categoryMainCode},#{vo.categoryMiddleCode},#{vo.categorySubCode},#{vo.categorySubName});
+  </insert>
+  
+  <insert id="setDbProductInput">
+    insert into dbProduct value (#{vo.idx},#{vo.categoryMainCode},#{vo.categoryMiddleCode},#{vo.categorySubCode},#{vo.productCode},#{vo.productName},#{vo.detail},#{vo.mainPrice},#{vo.fSName},#{vo.content});
   </insert>
 
   

@@ -2,6 +2,8 @@ package com.spring.javaclassS.service;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.spring.javaclassS.vo.DbProductVO;
 
 public interface DbShopService {
@@ -33,5 +35,13 @@ public interface DbShopService {
 	public DbProductVO getCategoryProductName(DbProductVO vo);
 
 	public int setCategorySubDelete(String categorySubCode);
+
+	public List<DbProductVO> getCategorySubName(String categoryMainCode, String categoryMiddleCode);
+
+	public int imgCheckProductInput(MultipartFile file, DbProductVO vo);
+
+	public List<DbProductVO> getSubTitle();
+
+	public List<DbProductVO> getDbShopList(String part, String mainPrice);
 
 }

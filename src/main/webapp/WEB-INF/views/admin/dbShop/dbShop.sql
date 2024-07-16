@@ -28,6 +28,10 @@ create table categorySub(
   foreign key(categoryMiddleCode) references categoryMiddle(categoryMiddleCode)
 );
 
+select * from categoryMiddle;
+select * from categoryMiddle 
+    where categoryMiddleCode=#{vo.categoryMiddleCode} and categoryMiddleName=#{vo.categoryMiddleName};
+
 /* 세분류(상품 테이블) */
 create table dbProduct (
   idx  int not null, 				/* 상품 고유번호 */
@@ -47,3 +51,5 @@ create table dbProduct (
   foreign key(categorySubCode) references categorySub(categorySubCode)
 );
 /* 상품에 분류를 넣음으로써 상품코드만 봐도 어느 분류인지 알 수 있도록 */
+
+/* 세분류에서 idx는 auto_increment를 주지 않음, 상품명 등으로 검색했을 때 자료가 나오지 않으면 그때 idx 부여하기 위해서 */
