@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.spring.javaclassS.dao.DbShopDAO">
-
+	
   <select id="getCategoryMainOne" resultType="com.spring.javaclassS.vo.DbProductVO">
     select * from categoryMain where categoryMainCode=#{categoryMainCode} || categoryMainName=#{categoryMainName};
   </select>
@@ -51,6 +51,22 @@
     where categoryMainCode = #{vo.categoryMainCode} and categoryMiddleCode = #{vo.categoryMiddleCode} and categorySubCode = #{vo.categorySubCode}; 
   </select>
   
+  <select id="getCategoryProductNameOne" resultType="com.spring.javaclassS.vo.DbProductVO">
+    select * from dbProduct where productName = #{productName}; 
+    <!-- select *,(select categoryMainName from categoryMain where categoryMainCode=#{vo.categoryMainCode}) as categoryMainName,
+      (select categoryMiddleName from categoryMiddle where categoryMiddleCode=#{vo.categoryMiddleCode}) as categoryMiddleName,
+      (select categorySubName from categorySub where categorySubCode=#{vo.categorySubCode}) as categorySubName
+      from dbProduct where productName = #{vo.productName}; --> 
+  </select>
+  
+  <select id="getCategoryProductNameOneVO" resultType="com.spring.javaclassS.vo.DbProductVO">
+    <!-- select * from dbProduct where productName = #{productName}; --> 
+    select *,(select categoryMainName from categoryMain where categoryMainCode=#{vo.categoryMainCode}) as categoryMainName,
+      (select categoryMiddleName from categoryMiddle where categoryMiddleCode=#{vo.categoryMiddleCode}) as categoryMiddleName,
+      (select categorySubName from categorySub where categorySubCode=#{vo.categorySubCode}) as categorySubName
+      from dbProduct where productName = #{vo.productName}; 
+  </select>
+  
   <select id="getSubTitle" resultType="com.spring.javaclassS.vo.DbProductVO">
   	select categorySubName from categorySub group by categorySubName order by categorySubName;
   </select>
@@ -64,6 +80,34 @@
 	 		  where sub.categorySubName = #{part} and substring(product.productCode,4,3)=sub.categorySubCode <if test='mainPrice != 0'>and <![CDATA[mainPrice < #{mainPrice}]]></if> order by idx desc;
 	 	</if>
 	</select>
+	
+	<select id="getDbShopProduct" resultType="com.spring.javaclassS.vo.DbProductVO">
+	  select * from dbProduct where idx = #{idx};
+	</select>
+	
+  <select id="getDbShopOption" resultType="com.spring.javaclassS.vo.DbOptionVO">
+  	select * from dbOption where productIdx = #{idx} order by idx;
+  </select>
+  
+  <select id="getCategoryProductNameAjax" resultType="com.spring.javaclassS.vo.DbProductVO">
+  	select * from dbProduct
+  	where categoryMainCode=#{categoryMainCode} and categoryMiddleCode=#{categoryMiddleCode} and categorySubCode=#{categorySubCode};
+  </select>
+  
+  <select id="getProductInfor" resultType="com.spring.javaclassS.vo.DbProductVO">
+  	select product.*, main.categoryMainName, middle.categoryMiddleName, sub.categorySubName
+  	from dbProduct product, categoryMain main, categoryMiddle middle, categorySub sub
+  	where productName=#{productName} order by idx limit 1;
+  </select>
+  
+  <select id="getOptionList" resultType="com.spring.javaclassS.vo.DbOptionVO">
+  	select * from dbOption where productIdx = #{productIdx} order by optionName;
+  </select>
+  
+  <select id="getOptionSame" resultType="int">
+    select count(*) from dbOption where productIdx=#{productIdx} and optionName=#{optionName};
+  </select>
+  
   
   
 	
@@ -83,6 +127,10 @@
   <insert id="setDbProductInput">
     insert into dbProduct value (#{vo.idx},#{vo.categoryMainCode},#{vo.categoryMiddleCode},#{vo.categorySubCode},#{vo.productCode},#{vo.productName},#{vo.detail},#{vo.mainPrice},#{vo.fSName},#{vo.content});
   </insert>
+  
+  <insert id="setDbOptionInput">
+    insert into dbOption values (default,#{vo.productIdx},#{vo.optionName},#{vo.optionPrice});
+  </insert>
 
   
   
@@ -98,5 +146,10 @@
 	<delete id="setCategorySubDelete">
 	  delete from categorySub where categorySubCode = #{categorySubCode};
 	</delete>
+	
+  <delete id="setOptionDelete">
+    delete from dbOption where idx = #{idx};
+  </delete>
+  
 	
 </mapper>

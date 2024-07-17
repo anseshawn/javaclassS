@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.javaclassS.common.JavaclassProvide;
 import com.spring.javaclassS.dao.DbShopDAO;
+import com.spring.javaclassS.vo.DbOptionVO;
 import com.spring.javaclassS.vo.DbProductVO;
 
 @Service
@@ -26,7 +27,7 @@ public class DbShopServiceImpl implements DbShopService {
 
 	@Override
 	public DbProductVO getCategoryMainOne(String categoryMainCode, String categoryMainName) {
-		return dbShopDAO.getCategoryMainOne(categoryMainCode,categoryMainName);
+		return dbShopDAO.getCategoryMainOne(categoryMainCode, categoryMainName);
 	}
 
 	@Override
@@ -58,7 +59,7 @@ public class DbShopServiceImpl implements DbShopService {
 	public List<DbProductVO> getCategoryMiddle() {
 		return dbShopDAO.getCategoryMiddle();
 	}
-	
+
 	@Override
 	public DbProductVO getCategorySubOne(DbProductVO vo) {
 		return dbShopDAO.getCategorySubOne(vo);
@@ -93,7 +94,6 @@ public class DbShopServiceImpl implements DbShopService {
 	public int setCategorySubDelete(String categorySubCode) {
 		return dbShopDAO.setCategorySubDelete(categorySubCode);
 	}
-	
 
 	@Override
 	public int imgCheckProductInput(MultipartFile file, DbProductVO vo) {
@@ -127,7 +127,7 @@ public class DbShopServiceImpl implements DbShopService {
     if(content.indexOf("src=\"/") == -1) return 0;    // content박스의 내용중 그림이 없으면 돌려보낸다.
 
     HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
-    String uploadPath = request.getSession().getServletContext().getRealPath("/resources/data/ckeditor/");
+    String uploadPath = request.getSession().getServletContext().getRealPath("/resources/data/");
 
     int position = 31;
     String nextImg = content.substring(content.indexOf("src=\"/") + position);
@@ -136,9 +136,9 @@ public class DbShopServiceImpl implements DbShopService {
     while(sw) {
       String imgFile = nextImg.substring(0,nextImg.indexOf("\""));
       String copyFilePath = "";
-      String oriFilePath = uploadPath + imgFile;
+      String oriFilePath = uploadPath + "ckeditor/" + imgFile;
 
-      copyFilePath = uploadPath + "product/" + imgFile;
+      copyFilePath = uploadPath + "dbShop/product/" + imgFile;
 
       javaclassProvide.fileCopyCheck(oriFilePath, copyFilePath);
 
@@ -173,4 +173,55 @@ public class DbShopServiceImpl implements DbShopService {
 	public List<DbProductVO> getCategorySubName(String categoryMainCode, String categoryMiddleCode) {
 		return dbShopDAO.getCategorySubName(categoryMainCode, categoryMiddleCode);
 	}
+
+	@Override
+	public DbProductVO getDbShopProduct(int idx) {
+		return dbShopDAO.getDbShopProduct(idx);
+	}
+
+	@Override
+	public List<DbOptionVO> getDbShopOption(int idx) {
+		return dbShopDAO.getDbShopOption(idx);
+	}
+
+	@Override
+	public DbProductVO getProductInfor(String productName) {
+		return dbShopDAO.getProductInfor(productName);
+	}
+
+	@Override
+	public List<DbOptionVO> getOptionList(int productIdx) {
+		return dbShopDAO.getOptionList(productIdx);
+	}
+
+	@Override
+	public List<DbProductVO> getCategoryProductNameAjax(String categoryMainCode, String categoryMiddleCode,	String categorySubCode) {
+		return dbShopDAO.getCategoryProductNameAjax(categoryMainCode, categoryMiddleCode,	categorySubCode);
+	}
+
+	@Override
+	public int getOptionSame(int productIdx, String optionName) {
+		return dbShopDAO.getOptionSame(productIdx, optionName);
+	}
+
+	@Override
+	public int setDbOptionInput(DbOptionVO vo) {
+		return dbShopDAO.setDbOptionInput(vo);
+	}
+
+	@Override
+	public int setOptionDelete(int idx) {
+		return dbShopDAO.setOptionDelete(idx);
+	}
+
+	@Override
+	public DbProductVO getCategoryProductNameOne(String productName) {
+		return dbShopDAO.getCategoryProductNameOne(productName);
+	}
+
+	@Override
+	public DbProductVO getCategoryProductNameOneVO(DbProductVO imsiVO) {
+		return dbShopDAO.getCategoryProductNameOneVO(imsiVO);
+	}
+	
 }

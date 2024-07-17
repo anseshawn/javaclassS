@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.spring.javaclassS.vo.DbOptionVO;
 import com.spring.javaclassS.vo.DbProductVO;
 
 public interface DbShopService {
@@ -21,7 +22,7 @@ public interface DbShopService {
 	public int setCategoryMiddleInput(DbProductVO vo);
 
 	public List<DbProductVO> getCategoryMiddle();
-	
+
 	public DbProductVO getCategorySubOne(DbProductVO vo);
 
 	public int setCategoryMiddleDelete(String categoryMiddleCode);
@@ -36,12 +37,32 @@ public interface DbShopService {
 
 	public int setCategorySubDelete(String categorySubCode);
 
-	public List<DbProductVO> getCategorySubName(String categoryMainCode, String categoryMiddleCode);
-
 	public int imgCheckProductInput(MultipartFile file, DbProductVO vo);
 
 	public List<DbProductVO> getSubTitle();
 
 	public List<DbProductVO> getDbShopList(String part, String mainPrice);
+
+	public List<DbProductVO> getCategorySubName(String categoryMainCode, String categoryMiddleCode);
+
+	public DbProductVO getDbShopProduct(int idx);
+
+	public List<DbOptionVO> getDbShopOption(int idx);
+
+	public DbProductVO getProductInfor(String productName);
+
+	public List<DbOptionVO> getOptionList(int productIdx);
+
+	public List<DbProductVO> getCategoryProductNameAjax(String categoryMainCode, String categoryMiddleCode,	String categorySubCode);
+
+	public int getOptionSame(int productIdx, String optionName);
+
+	public int setDbOptionInput(DbOptionVO vo);
+
+	public int setOptionDelete(int idx);
+
+	public DbProductVO getCategoryProductNameOne(String productName);
+
+	public DbProductVO getCategoryProductNameOneVO(DbProductVO imsiVO);
 
 }
