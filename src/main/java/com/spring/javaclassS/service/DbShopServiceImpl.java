@@ -13,7 +13,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.javaclassS.common.JavaclassProvide;
 import com.spring.javaclassS.dao.DbShopDAO;
+import com.spring.javaclassS.vo.DbCartVO;
 import com.spring.javaclassS.vo.DbOptionVO;
+import com.spring.javaclassS.vo.DbOrderVO;
 import com.spring.javaclassS.vo.DbProductVO;
 
 @Service
@@ -224,4 +226,38 @@ public class DbShopServiceImpl implements DbShopService {
 		return dbShopDAO.getCategoryProductNameOneVO(imsiVO);
 	}
 	
+	@Override
+	public DbCartVO getDbCartProductOptionSearch(String productName, String optionName, String mid) {
+		return dbShopDAO.getDbCartProductOptionSearch(productName, optionName, mid);
+	}
+
+	@Override
+	public int dbShopCartUpdate(DbCartVO vo) {
+		return dbShopDAO.dbShopCartUpdate(vo);
+	}
+
+	@Override
+	public int dbShopCartInput(DbCartVO vo) {
+		return dbShopDAO.dbShopCartInput(vo);
+	}
+
+	@Override
+	public List<DbCartVO> getDbCartList(String mid) {
+		return dbShopDAO.getDbCartList(mid);
+	}
+
+	@Override
+	public int dbCartDelete(int idx) {
+		return dbShopDAO.dbCartDelete(idx);
+	}
+
+	@Override
+	public DbOrderVO getOrderMaxIdx() {
+		return dbShopDAO.getOrderMaxIdx();
+	}
+
+	@Override
+	public DbCartVO getCartIdx(int idx) {
+		return dbShopDAO.getCartIdx(idx);
+	}
 }
