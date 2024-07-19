@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,9 +22,11 @@ import com.spring.javaclassS.common.JavaclassProvide;
 import com.spring.javaclassS.pagination.PageProcess;
 import com.spring.javaclassS.service.DbShopService;
 import com.spring.javaclassS.service.MemberService;
+import com.spring.javaclassS.vo.DbBaesongVO;
 import com.spring.javaclassS.vo.DbCartVO;
 import com.spring.javaclassS.vo.DbOptionVO;
 import com.spring.javaclassS.vo.DbOrderVO;
+import com.spring.javaclassS.vo.DbPayMentVO;
 import com.spring.javaclassS.vo.DbProductVO;
 import com.spring.javaclassS.vo.MemberVO;
 
@@ -403,6 +406,99 @@ public class DbShopController {
     model.addAttribute("memberVO", memberVO);
 		
 		return "dbShop/dbOrder";
+	}
+	
+	// 결제시스템(결제창 호출) - 결제 API이용
+	@RequestMapping(value="/payment", method=RequestMethod.POST)
+	public String paymentPost(DbOrderVO orderVo, DbPayMentVO payMentVO, DbBaesongVO baesongVO, HttpSession session, Model model) {
+		model.addAttribute("payMentVO", payMentVO);
+		
+		session.setAttribute("sPayMentVO", payMentVO);
+		session.setAttribute("sBaesongVO", baesongVO);
+		
+		return "dbShop/paymentOk";
+		// return "redirect:/dbShop/paymentResult";
+	}
+	
+	// 결제창 호출후, 결제완료후 주문내역을 '주문테이블'에 저장처리한다. - 주문/결제된 물품은 장바구니에서 제거시켜준다. 사용한 세션은 제거시킨다. - 구매한 상품들의 정보를 확인창으로 넘겨준다.
+	@Transactional
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value="/paymentResult", method=RequestMethod.GET)
+	public String paymentResultGet(HttpSession session, DbPayMentVO receivePayMentVO, Model model) {
+		// 결제전에 세션에 저장해 두었던 상품(주문/배송)의 주문내역을 dbOrder/dbBaesong테이블에 저장한다.
+		List<DbOrderVO> orderVOS = (List<DbOrderVO>) session.getAttribute("sOrderVOS");
+		DbPayMentVO payMentVO = (DbPayMentVO) session.getAttribute("sPayMentVO");
+		DbBaesongVO baesongVO = (DbBaesongVO) session.getAttribute("sBaesongVO");
+		
+		// 사용된 세션은 반환한다. 단, sOrderVOS 는 마지막 결제처리후에 결재결과창에서 확인하도록 하였기에 지금지우지 않고, 확인후 삭제처리한다.
+		session.removeAttribute("sBaesongVO");
+		
+		for(DbOrderVO vo : orderVOS) {
+			vo.setIdx(Integer.parseInt(vo.getOrderIdx().substring(8)));	// 주문테이블에 고유번호를 셋팅한다.
+			vo.setOrderIdx(vo.getOrderIdx());		// 주문번호를 주문테이블의 주문번호필드에 지정처리한다.
+			vo.setMid(vo.getMid());							
+			
+			dbShopService.setDbOrder(vo);		// 주문/결제 처리된 내용을 주문테이블(dbOrder)에 저장시킨다.
+			dbShopService.setDbCartDeleteAll(vo.getCartIdx());	// 주문이 완료되었기에 장바구니테이블에서 주문한 내역을 삭제한다.
+		}
+		// 주문된 정보중 누락된 정보를 배송테이블에 담기위한 처리작업(기존 baesongVO에 담기지 않은 내역들을 담아주고 있다.)
+		baesongVO.setOIdx(orderVOS.get(0).getIdx());
+		baesongVO.setOrderIdx(orderVOS.get(0).getOrderIdx());
+		baesongVO.setAddress(payMentVO.getBuyer_addr());
+		baesongVO.setTel(payMentVO.getBuyer_tel());
+		
+		int totalBaesongOrder = 0;
+		for(int i=0; i<orderVOS.size(); i++) {
+			totalBaesongOrder += orderVOS.get(i).getTotalPrice();
+		}
+		// 배송정보를 저장하기전에, 총 주문금액이 5만원 미만이면, 배송비를 3000원 추가시킨다.
+		if(totalBaesongOrder < 50000) baesongVO.setOrderTotalPrice(totalBaesongOrder + 3000);
+		else baesongVO.setOrderTotalPrice(totalBaesongOrder);
+		//System.out.println("baesongVO : " + baesongVO);
+		dbShopService.setDbBaesong(baesongVO);	// 배송내역을 배송테이블(dbBaesong)에 저장한다.
+		dbShopService.setMemberPointPlus((int)(baesongVO.getOrderTotalPrice() * 0.01), orderVOS.get(0).getMid());	// 회원테이블에 포인트 적립하기(1%)
+		
+		payMentVO.setImp_uid(receivePayMentVO.getImp_uid());
+		payMentVO.setMerchant_uid(receivePayMentVO.getMerchant_uid());
+		payMentVO.setPaid_amount(receivePayMentVO.getPaid_amount());
+		payMentVO.setApply_num(receivePayMentVO.getApply_num());
+		
+		// 오늘 주문에 들어간 정보들을 확인해주기위해 다시 session에 담아서 넘겨주고 있다.
+		session.setAttribute("sPayMentVO", payMentVO);
+		session.setAttribute("orderTotalPrice", baesongVO.getOrderTotalPrice());
+		
+		return "redirect:/message/paymentResultOk";
+	}
+	
+	// 결재완료되고난후 주문/배송 테이블에 처리가 끝난 주문상품에 대한 결제정보 보여주기
+	@SuppressWarnings({ "unchecked" })
+	@RequestMapping(value="/paymentResultOk", method=RequestMethod.GET)
+	public String paymentResultOkGet(HttpSession session, Model model) {
+		List<DbOrderVO> orderVOS = (List<DbOrderVO>) session.getAttribute("sOrderVOS");
+		model.addAttribute("orderVOS", orderVOS);
+		session.removeAttribute("sOrderVOS");
+		
+		// 구매한 총 금액(여러개의 상품이라도 주문번호는 1개를 부여했다)은 배송테이블에 있기에 주문고유번호로 배송테이블에서 구매한 총 금액을 가져온다.
+		int totalBaesongOrder = dbShopService.getTotalBaesongOrder(orderVOS.get(orderVOS.size()-1).getOrderIdx());
+		model.addAttribute("totalBaesongOrder", totalBaesongOrder);
+		
+		return "dbShop/paymentResult";
+	}
+	
+	// 배송지 정보 보여주기
+	@RequestMapping(value="/dbOrderBaesong", method=RequestMethod.GET)
+	public String dbOrderBaesongGet(String orderIdx, Model model) {
+		List<DbBaesongVO> vos = dbShopService.getOrderBaesong(orderIdx);	// 같은 주문번호로 구매된 상품이 2개 이상 있을수 있기에 List객체로 가져온다.
+		
+		DbBaesongVO vo = vos.get(0);	// 같은 배송지라면 0번째것 하나만 vo에 담아서 처리한다.
+		String payMethod = "";
+		if(vo.getPayment().substring(0,1).equals("C")) payMethod = "카드결제";
+		else payMethod = "은행(무통장)결제";
+		
+		model.addAttribute("payMethod", payMethod);
+		model.addAttribute("vo", vo);
+		
+		return "dbShop/dbOrderBaesong";
 	}
 	
 }

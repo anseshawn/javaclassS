@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.javaclassS.common.JavaclassProvide;
 import com.spring.javaclassS.dao.DbShopDAO;
+import com.spring.javaclassS.vo.DbBaesongVO;
 import com.spring.javaclassS.vo.DbCartVO;
 import com.spring.javaclassS.vo.DbOptionVO;
 import com.spring.javaclassS.vo.DbOrderVO;
@@ -259,5 +260,35 @@ public class DbShopServiceImpl implements DbShopService {
 	@Override
 	public DbCartVO getCartIdx(int idx) {
 		return dbShopDAO.getCartIdx(idx);
+	}
+	
+	@Override
+	public void setDbOrder(DbOrderVO vo) {
+		dbShopDAO.setDbOrder(vo);
+	}
+
+	@Override
+	public void setDbCartDeleteAll(int cartIdx) {
+		dbShopDAO.setDbCartDeleteAll(cartIdx);
+	}
+
+	@Override
+	public void setDbBaesong(DbBaesongVO baesongVO) {
+		dbShopDAO.setDbBaesong(baesongVO);
+	}
+
+	@Override
+	public void setMemberPointPlus(int point, String mid) {
+		dbShopDAO.setMemberPointPlus(point, mid);
+	}
+
+	@Override
+	public int getTotalBaesongOrder(String orderIdx) {
+		return dbShopDAO.getTotalBaesongOrder(orderIdx);
+	}
+
+	@Override
+	public List<DbBaesongVO> getOrderBaesong(String orderIdx) {
+		return dbShopDAO.getOrderBaesong(orderIdx);
 	}
 }
