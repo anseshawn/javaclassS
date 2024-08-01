@@ -21,7 +21,7 @@
 			//채팅 서버 주소
 		  let url = "ws://192.168.50.20:9090/javaclassS/chatserver";
 		  //let url = "ws://localhost:9090/${ctp}/chatserver";
-		     		
+		  
 		  // 웹 소켓
 		  let ws;
 		
@@ -141,32 +141,17 @@
 		  	}
 		  });
 		  
-		  // 메세지 보내기
+		  
 		  $('#msg').keydown(function() {
 		  	if (event.keyCode == 13) {
 		  		if(!event.shiftKey) {
 			  		if($('#msg').val().trim() == '') return false;
-			  		
-			  		// 메세지 내역을 DB에 저장시키기(ajax처리 했다.)
-			  		$.ajax({
-			  			url  : "${ctp}/webSocket/msgInput",
-			  			type : "post",
-			  			data : {
-			  				msg : $('#msg').val(),
-			  				userId : '${sMid}'
-			  			},
-			  			error:function() {
-			  				alert("전송오류!");
-			  			}
-			  		});
-			  		
-			  		// 메시지 내역을 DB에 저장시킨후 다시 채팅은 진행시킨다.
 			  		let chatColor = $("#chatColor").val();
 			  		
 			  		ws.send('2#' + $('#user').val() + '#' + $(this).val() + '@' + chatColor);
 			  		print($('#user').val(), '<font color="'+chatColor+'">'+$(this).val()+'</font>');
 			  		
-			  		event.preventDefault();	// 이전 스크립트 내용은 무시하고 아래의 내용을 처리하게 한다.
+			  		event.preventDefault();	
 			      $('#msg').val('');  		
 			  		$('#msg').focus();
 			  		$('#list').scrollTop($('#list').prop('scrollHeight'));	
