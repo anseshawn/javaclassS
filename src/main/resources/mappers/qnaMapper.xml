@@ -1,0 +1,60 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.javaclassS.dao.QnaDAO">
+  <select id="totRecCnt" resultType="int">
+    select count(*) from qna2;
+  </select>
+  
+  <select id="getQnaList" resultType="com.spring.javaclassS.vo.QnaVO">
+    select qna2.*, cast(timestampdiff(minute, wDate, now())/60 as signed integer) as diffTime,
+      (select qnaAnswer from qna2Admin where qnaIdx=qna2.idx ) as qnaAnswer
+      from qna2 order by qnaIdx desc, qnaSw desc, ansLevel limit #{startIndexNo},#{pageSize};
+  </select>
+  
+  <select id="getEmail" resultType="String">
+    select email from member2 where mid = #{mid};
+  </select>
+  
+  <select id="getCountIdx" resultType="int">
+  	select count(idx) from qna2;
+  </select>
+  
+  <select id="getMaxIdx" resultType="int">
+  	select ifnull(max(idx),0) from qna2;
+  </select>
+  <select id="getQnaContent" resultType="com.spring.javaclassS.vo.QnaVO">
+    select * from qna2 where idx = #{idx};
+  </select>
+  
+  <select id="getQnaIdxCheck" resultType="com.spring.javaclassS.vo.QnaVO">
+    select * from qna2 where SUBSTRING_INDEX(qnaIdx, '_', 1)  = #{qnaIdx};
+  </select>
+  
+  
+  <insert id="qnaInputOk">
+    insert into qna2 values (#{vo.idx},#{vo.qnaIdx},#{vo.mid},#{vo.nickName},#{vo.title},#{vo.email},#{vo.pwd},default,#{vo.content},#{vo.qnaSw},#{vo.ansLevel});
+  </insert>
+  
+  <insert id="qnaAdminInputOk">
+    insert into qna2Admin values (default, #{qnaIdx}, default);
+  </insert>
+  
+  
+  
+  <update id="setQnaContentUpdate">
+    update qna2 set title=#{vo.title},email=#{vo.email},wDate=now(),content=#{vo.content} where idx=#{vo.idx};
+  </update>
+  
+  <update id="setQnaCheckUpdate">
+    update qna2 set title=#{title}, content=#{title} where idx = #{idx};
+  </update>
+  
+  <update id="qnaAdminAnswerUpdateOk">
+    update qna2Admin set qnaAnswer = '답변완료' where qnaIdx = #{qnaIdx};
+  </update>
+  
+  
+  
+  <delete id="setQnaDelete">
+    delete from qna2 where idx = #{idx};
+  </delete>
+</mapper>
