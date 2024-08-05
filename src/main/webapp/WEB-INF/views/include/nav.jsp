@@ -80,6 +80,7 @@
 	        <a href="${ctp}/study/transaction/transactionForm" class="w3-bar-item w3-button">트랜잭션</a>
 	        <a href="#" class="w3-bar-item w3-button">스케줄러</a>
 	        <a href="${ctp}/study/csv/csvForm" class="w3-bar-item w3-button">CSV를MySQL로</a>
+	        <a href="${ctp}/errorPage/errorMain" class="w3-bar-item w3-button">Error 연습</a>
 	      </div>
 	    </div>
 	    <div class="w3-dropdown-hover w3-hide-small">
